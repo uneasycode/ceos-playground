@@ -3,119 +3,110 @@ prefix: ""
 topology:
   kinds:
     ceos:
-      image: ceos:4.34.1F
+      image: "ceos:4.34.1F"
   nodes:
     leaf1:
       kind: "ceos"
-      ports:
-        - "10000:22/tcp"
+      labels:
+        graph-posX: "305"
+        graph-posY: "265"
+        graph-groupLabelPos: bottom-center
     leaf2:
       kind: "ceos"
-      ports:
-        - "10001:22/tcp"
+      labels:
+        graph-posX: "395"
+        graph-posY: "265"
+        graph-groupLabelPos: bottom-center
     leaf3:
       kind: "ceos"
-      ports:
-        - "10002:22/tcp"
+      labels:
+        graph-posX: "515"
+        graph-posY: "265"
+        graph-groupLabelPos: bottom-center
     leaf4:
       kind: "ceos"
-      ports:
-        - "10003:22/tcp"
+      labels:
+        graph-posX: "615"
+        graph-posY: "265"
+        graph-groupLabelPos: bottom-center
     spine1:
       kind: "ceos"
-      ports:
-        - "10004:22/tcp"
+      labels:
+        graph-posX: "365"
+        graph-posY: "175"
+        graph-groupLabelPos: bottom-center
     spine2:
       kind: "ceos"
-      ports:
-        - "10005:22/tcp"
+      labels:
+        graph-posX: "545"
+        graph-posY: "175"
+        graph-groupLabelPos: bottom-center
     host-A:
       kind: "ceos"
-      ports:
-        - "10006:22/tcp"
+      labels:
+        graph-posX: "305"
+        graph-posY: "335"
+        graph-groupLabelPos: bottom-center
     host-B:
       kind: "ceos"
-      ports:
-        - "10007:22/tcp"
+      labels:
+        graph-posX: "395"
+        graph-posY: "335"
+        graph-groupLabelPos: bottom-center
     host-C:
       kind: "ceos"
-      ports:
-        - "10008:22/tcp"
+      labels:
+        graph-posX: "515"
+        graph-posY: "335"
+        graph-groupLabelPos: bottom-center
     host-D:
       kind: "ceos"
-      ports:
-        - "10009:22/tcp"
+      labels:
+        graph-posX: "615"
+        graph-posY: "335"
+        graph-groupLabelPos: bottom-center
     Leaf5:
       kind: "ceos"
-      ports:
-        - "10010:22/tcp"
+      labels:
+        graph-posX: "455"
+        graph-posY: "125"
+        graph-groupLabelPos: bottom-center
     CVX1:
       kind: "ceos"
-      ports:
-        - "10011:22/tcp"
+      labels:
+        graph-posX: "395"
+        graph-posY: "75"
+        graph-groupLabelPos: bottom-center
     CVX2:
       kind: "ceos"
-      ports:
-        - "10012:22/tcp"
+      labels:
+        graph-posX: "455"
+        graph-posY: "65"
+        graph-groupLabelPos: bottom-center
     CVX3:
       kind: "ceos"
-      ports:
-        - "10013:22/tcp"
+      labels:
+        graph-posX: "525"
+        graph-posY: "85"
+        graph-groupLabelPos: bottom-center
   links:
-    - endpoints:
-        - "spine1:eth1"
-        - "leaf1:eth1"
-    - endpoints:
-        - "spine2:eth1"
-        - "leaf1:eth2"
-    - endpoints:
-        - "spine1:eth2"
-        - "leaf2:eth1"
-    - endpoints:
-        - "spine2:eth2"
-        - "leaf2:eth2"
-    - endpoints:
-        - "spine2:eth3"
-        - "leaf3:eth2"
-    - endpoints:
-        - "spine2:eth4"
-        - "leaf4:eth2"
-    - endpoints:
-        - "spine1:eth3"
-        - "leaf3:eth1"
-    - endpoints:
-        - "spine1:eth4"
-        - "leaf4:eth1"
-    - endpoints:
-        - "leaf1:eth3"
-        - "host-A:eth1"
-    - endpoints:
-        - "leaf2:eth3"
-        - "host-A:eth2"
-    - endpoints:
-        - "leaf2:eth4"
-        - "host-B:eth1"
-    - endpoints:
-        - "leaf1:eth4"
-        - "leaf2:eth5"
-    - endpoints:
-        - "leaf3:eth3"
-        - "host-C:eth1"
-    - endpoints:
-        - "leaf4:eth3"
-        - "host-D:eth1"
-    - endpoints:
-        - "Leaf5:eth1"
-        - "spine1:eth5"
-    - endpoints:
-        - "Leaf5:eth2"
-        - "spine2:eth5"
-    - endpoints:
-        - "CVX1:eth1"
-        - "Leaf5:eth3"
-    - endpoints:
-        - "CVX2:eth1"
-        - "Leaf5:eth4"
-    - endpoints:
-        - "CVX3:eth1"
-        - "Leaf5:eth5"
+    - endpoints: [ "spine1:eth1", "leaf1:eth1" ]
+    - endpoints: [ "spine1:eth2", "leaf2:eth1" ]
+    - endpoints: [ "spine1:eth3", "leaf3:eth1" ]
+    - endpoints: [ "spine1:eth4", "leaf4:eth1" ]
+    - endpoints: [ "Leaf5:eth1", "spine1:eth5" ]
+    - endpoints: [ "spine2:eth1", "leaf1:eth2" ]
+    - endpoints: [ "spine2:eth2", "leaf2:eth2" ]
+    - endpoints: [ "spine2:eth3", "leaf3:eth2" ]
+    - endpoints: [ "spine2:eth4", "leaf4:eth2" ]
+    - endpoints: [ "Leaf5:eth2", "spine2:eth5" ]
+    - endpoints: [ "CVX1:eth1", "Leaf5:eth3" ]
+    - endpoints: [ "CVX2:eth1", "Leaf5:eth4" ]
+    - endpoints: [ "CVX3:eth1", "Leaf5:eth5" ]
+    - endpoints: [ "leaf1:eth3", "leaf2:eth3" ]
+    - endpoints: [ "leaf2:eth4", "leaf1:eth4" ]
+    - endpoints: [ "leaf1:eth5", "host-A:eth1" ]
+    - endpoints: [ "leaf2:eth5", "host-A:eth2" ]
+    - endpoints: [ "leaf2:eth6", "host-B:eth1" ]
+    - endpoints: [ "leaf3:eth3", "host-C:eth1" ]
+    - endpoints: [ "leaf4:eth3", "host-D:eth1" ]
