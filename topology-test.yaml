@@ -1,0 +1,27 @@
+name: sample
+prefix: "" 
+topology:
+  kinds:
+    ceos:
+      image: ceos:4.34.1F 
+  nodes:
+    # Define your two Arista routers
+    ceos1:
+      kind: ceos 
+    ceos2:
+      kind: ceos
+
+    # Define the bridge. This tells containerlab to use an existing
+    # Linux bridge on the host named 'br-clab'.
+    br-clab:
+      kind: bridge
+
+  links:
+    # A direct point-to-point link between the two routers
+    - endpoints: ["ceos1:eth1", "ceos2:eth1"]
+
+    # Connect ceos1's eth2 interface to the br-clab bridge
+    - endpoints: ["ceos1:eth2", "br-clab:eth1"]
+
+    # Connect ceos2's eth2 interface to the br-clab bridge
+    - endpoints: ["ceos2:eth2", "br-clab:eth2"]
