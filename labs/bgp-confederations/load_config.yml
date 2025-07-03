@@ -1,0 +1,10 @@
+---
+- name: Load Network Device Configs
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Arista Config Load
+      arista.eos.eos_config:
+        src: "backup/{{ inventory_hostname }}.cfg"
+
+

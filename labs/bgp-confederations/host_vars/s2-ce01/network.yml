@@ -1,0 +1,82 @@
+vlans:
+  - name: SVC01_C1_VLAN_SITE02_PE01
+    id: 1115
+  - name: L3VPN_Only
+    id: 1205
+
+ethernet_interfaces:
+  - name: Ethernet1
+    description: to b-pe01 ethernet4
+    # vlans: "1-4094"
+    switchport:
+      enabled: True
+      mode: "trunk"
+      trunk:
+        allowed_vlan: '1-4094'
+
+
+port_channel_interfaces:
+
+vlan_interfaces:
+- name: "Vlan1115"
+  description: SVC01_C1_VLAN_SITE02_PE01 - VRF ETHERNET_VPN
+  shutdown: False
+  vrf: ETHERNET_VPN
+  ip_address: "10.1.5.{{ device_id }}/24"
+
+- name: "Vlan1205"
+  description: L3VPN_Only - VRF ATM
+  shutdown: False
+  vrf: ATM
+  ip_address: "10.2.1.{{ device_id }}/24"
+  ospf_area: 0.0.0.0
+  ospf_network_point_to_point: true
+
+static_routes:
+  - vrf: "{{ management_vrf_name }}"
+    destination_address_prefix: 0.0.0.0/0
+    gateway: 192.168.2.1
+  - vrf: ETHERNET_VPN
+    destination_address_prefix: 0.0.0.0/0
+    gateway: 10.1.5.1
+
+router_ospf:
+  process_ids:
+  - id: 1205
+    vrf: ATM
+    passive_interface_default: false
+    no_passive_interfaces:
+    - Vlan1205
+    eos_cli: "dn-bit-ignore"
+
+    # router_id: 10.255.1.5
+    # redistribute:
+    #   bgp:
+    #     enabled: true
+    #     route_map: RM-BGP-TO-OSPF
+
+# router_bgp:
+#   as: '65102'
+#   updates:
+#     wait_install: false
+#   peer_groups:
+#   - name: MPLS-BACKBONE
+#     remote_as: '65000'
+#     description: MPLS CONNECTITVITY
+#     shutdown: false
+#     bfd: false
+#   vrfs:
+#   - name: ATM
+#     redistribute:
+#       connected:
+#         enabled: true
+#     address_family_ipv4:
+#       neighbors:
+#       - ip_address: 10.2.1.1
+#         activate: true
+#     neighbors:
+#     - ip_address: 10.2.1.1
+#       peer_group: MPLS-BACKBONE
+#       description: MPLS CONNECTITVITY b-pe01
+#     updates:
+#       wait_install: false

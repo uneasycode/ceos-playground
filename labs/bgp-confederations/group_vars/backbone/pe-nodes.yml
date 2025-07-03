@@ -1,0 +1,51 @@
+# PE router group
+pe:
+  defaults:
+    platform: ceos
+    loopback_ipv4_pool: 10.255.1.0/27
+    virtual_router_mac_address: 00:1c:73:00:dc:00
+    overlay_address_families:
+      - "evpn"
+    mpls_overlay_role: client
+    mpls_route_reflectors:
+      - 'a-p01'
+      - 'b-p02'
+    evpn_role: client
+    evpn_route_servers:
+      - 'a-p01'
+      - 'b-p02'
+    isis_system_id_prefix: '0000.0001'
+    spanning_tree_mode: none
+
+  node_groups:
+    - group: site01-pe01-02
+      nodes:
+        - name: a-pe01
+          id: 1
+          filter:
+            tags: [ 'site01', 'north', 'multihome', 'node01']
+          mgmt_ip: 192.168.2.11/24
+        - name: s1-pe02
+          id: 2
+          filter:
+            tags: [ 'site01', 'north', 'multihome', 'node02']
+          mgmt_ip: 192.168.2.12/24
+
+  nodes:
+    - name: s1-pe03
+      id: 3
+      filter:
+        tags: [ 'site01', 'south', 'node03']
+      mgmt_ip: 192.168.2.13/24
+
+    - name: s1-pe04
+      id: 4
+      filter:
+        tags: [ 'site01', 'south', 'node04']
+      mgmt_ip: 192.168.2.14/24
+
+    - name: b-pe01
+      id: 5
+      filter:
+        tags: [ 'site02', 'south', 'north']
+      mgmt_ip: 192.168.2.21/24

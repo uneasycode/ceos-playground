@@ -1,0 +1,29 @@
+router_bgp:
+  as: '65103'
+  router_id: 10.255.1.11
+  bgp:
+    default:
+      ipv4_unicast: true
+  maximum_paths:
+    paths: 4
+    ecmp: 4
+  peer_groups:
+  - name: MPLS-BACKBONE-FW-VRF
+    # update_source: Loopback0
+    bfd: true
+    send_community: all
+    maximum_routes: 0
+    remote_as: '65000'
+    ebgp_multihop: 10
+  vrfs:
+  - name: FW
+    redistribute:
+      connected:
+        enabled: true
+    neighbors:
+    - ip_address: 10.3.255.1
+      peer_group: MPLS-BACKBONE-FW-VRF
+      description: a-pe01-Loopback1013
+    - ip_address: 10.3.255.2
+      peer_group: MPLS-BACKBONE-FW-VRF
+      description: s1-pe02-Loopback1013

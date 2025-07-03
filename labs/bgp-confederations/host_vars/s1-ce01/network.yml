@@ -1,0 +1,59 @@
+vlans:
+- name: ETHERNET-VPN-IRB-1101
+  id: 1101
+- name: ETHERNET-VPN-L2VLAN-1199
+  id: 1199
+- name: FIREWALL-BGP-EXIT-S1-NORTH
+  id: 1301
+
+ethernet_interfaces:
+  - name: Ethernet1
+    description: to a-pe01 ethernet4
+    shutdown: false
+    channel_group:
+      id: 1
+      mode: active
+  - name: Ethernet2
+    description: to s1-pe02 ethernet4
+    shutdown: false
+    channel_group:
+      id: 1
+      mode: active
+
+port_channel_interfaces:
+  - name: Port-Channel1
+    description: to s1-ce01-po1
+    shutdown: false
+    switchport:
+      enabled: true
+      mode: trunk
+      trunk:
+        allowed_vlan: 1-4094
+
+vlan_interfaces:
+- name: "Vlan1101"
+  description: vrf-irb-vlan1101
+  shutdown: False
+  vrf: IRB
+  ip_address: "10.1.1.{{ device_id }}/24"
+- name: "Vlan1199"
+  description: vrf-irb-vlan1199
+  shutdown: False
+  vrf: L2VLAN
+  ip_address: "10.1.99.{{ device_id }}/24"
+- name: "Vlan1301"
+  description: vrf-irb-vlan1301
+  shutdown: False
+  vrf: FW
+  ip_address: "10.3.1.{{ device_id }}/24"
+
+static_routes:
+  - vrf: "{{ management_vrf_name }}"
+    destination_address_prefix: 0.0.0.0/0
+    gateway: 192.168.2.1
+  - vrf: "IRB"
+    destination_address_prefix: 10.1.0.0/16
+    gateway: 10.1.1.1
+  - vrf: "FW"
+    destination_address_prefix: 10.3.255.0/24
+    gateway: 10.3.1.1

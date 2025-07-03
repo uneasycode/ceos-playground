@@ -1,0 +1,54 @@
+---
+# Definition of connected endpoints in the fabric.
+routers:
+  - name: s1-ce01
+    adapters:
+      - endpoint_ports: [ eth1, eth2 ]
+        switch_ports: [ Ethernet4, Ethernet4 ]
+        switches: [ a-pe01, s1-pe02 ]
+        vlans: "1-4094"
+        mode: trunk
+        port_channel:
+          description: to s1-ce01-po1
+          mode: active
+          channel_id: 4
+          enabled: True
+          structured_config:
+            evpn_ethernet_segment:
+              identifier: "0000:0000:0101:0101:0101"
+              redundancy: all-active
+              designated_forwarder_election:
+                algorithm: "preference"
+                # Preference_value is only used when "algorithm" is "preference".
+                # preference_value: <int; 0-65535>
+                # Dont_preempt is only used when "algorithm" is "preference".
+                dont_preempt: False
+                hold_time: 1
+              mpls:
+                shared_index: 100
+              route_target: "01:01:01:01:01:01"
+            lacp_id: "0101.0101.0101"
+
+  - name: s1-ce03
+    adapters:
+      - endpoint_ports: [ eth1 ]
+        switch_ports: [ Ethernet4 ]
+        switches: [ s1-pe03 ]
+        vlans: "1-4094"
+        mode: trunk
+
+  - name: s1-ce04
+    adapters:
+      - endpoint_ports: [ eth1 ]
+        switch_ports: [ Ethernet4 ]
+        switches: [ s1-pe04 ]
+        vlans: "1-4094"
+        mode: trunk
+
+  - name: s2-ce01
+    adapters:
+      - endpoint_ports: [ eth1 ]
+        switch_ports: [ Ethernet3 ]
+        switches: [ b-pe01 ]
+        vlans: "1-4094"
+        mode: trunk
