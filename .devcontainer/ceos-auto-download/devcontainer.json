@@ -4,11 +4,8 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
-//
-  "containerEnv": {
-    "ARISTA_TOKEN": ""
-  },
-  "postCreateCommand": "bash .devcontainer/ceos-auto-download/post-create.sh",
+  "envFile": ".devcontainer/.env",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -19,5 +16,9 @@
       ]
     }
   },
-  "remoteUser": "vscode"
+  "remoteUser": "vscode",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb"
+  }
 }
