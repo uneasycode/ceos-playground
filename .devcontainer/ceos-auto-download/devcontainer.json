@@ -1,0 +1,23 @@
+{
+  "name": "Arista AVD & Containerlab",
+  "image": "mcr.microsoft.com/devcontainers/python:3.10-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+//
+  "containerEnv": {
+    "ARISTA_TOKEN": "45a3e6194305ac2261e8da6d4d4b0d13"
+  },
+  "postCreateCommand": "bash .devcontainer/ceos-auto-download/post-create.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "redhat.ansible",
+        "ms-azuretools.vscode-docker",
+        "srl-labs.vscode-containerlab"
+      ]
+    }
+  },
+  "remoteUser": "vscode"
+}

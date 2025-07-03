@@ -1,2 +1,6 @@
 # macOS specific files
 .DS_Store
+cEOS-lab-*.tar
+cEOS-lab-*.tar.xz
+cEOSarm-lab-*.tar
+cEOSarm-lab-*.tar.xz
