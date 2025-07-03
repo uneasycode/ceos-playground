@@ -6,7 +6,7 @@
   },
 //
   "containerEnv": {
-    "ARISTA_TOKEN": "45a3e6194305ac2261e8da6d4d4b0d13"
+    "ARISTA_TOKEN": ""
   },
   "postCreateCommand": "bash .devcontainer/ceos-auto-download/post-create.sh",
   "customizations": {
