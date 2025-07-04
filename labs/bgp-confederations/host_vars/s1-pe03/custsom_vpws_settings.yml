@@ -1,4 +1,0 @@
-custom_vpws_service_router_bgp:
-  vpws:
-  - name: "VPWS"
-    mpls_control_word: True

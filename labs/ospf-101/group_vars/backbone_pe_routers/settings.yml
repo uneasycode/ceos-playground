@@ -1,0 +1,22 @@
+custom_maintenance_interface_groups:
+  - name: serverLinkGroup
+    interfaces:
+      - Ethernet4
+    interface_maintenance_profiles:
+      - shutdownIntf
+
+custom_maintenance_maintenance:
+  interface_profiles:
+    - name: shutdownIntf
+      shutdown:
+        max_delay: 0
+  unit_profiles:
+    - name: onBootDelay
+      on_boot:
+        duration: 600
+  units:
+    - name: serverLinks
+      groups:
+        interface_groups:
+          - shutdownIntf
+      profile: onBootDelay

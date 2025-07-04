@@ -1,0 +1,58 @@
+custom_atm_ip_community_lists:
+  # Community: <BB ASN:<VRF-ID:12><LP-Management:1><LP Value:xxx>
+  - name: CL-INGRESS-ATM-LP-90
+    entries:
+      - action: permit
+        communities:
+          - 65000:10090
+  - name: CL-INGRESS-ATM-LP-110
+    entries:
+      - action: permit
+        communities:
+          - 65000:10110
+
+custom_atm_route_maps:
+  - name: RM-BGP-TO-OSPF
+    sequence_numbers:
+      - sequence: 10
+        type: permit
+        description: Redistribute BGP to OSPF
+        match:
+          - "ip address prefix-list PL-ATM-FAKE-PREFIX"
+        set:
+          - "ospf bit dn"
+          - "tag 1205"
+
+  - name: RM-MANAGE-WITH-COMMUNITIES
+    sequence_numbers:
+      - sequence: 10
+        type: permit
+        description: Configure LP to 90 for ATM
+        match:
+          - "community CL-INGRESS-ATM-LP-90"
+        set:
+          - "local-preference 90"
+      - sequence: 20
+        type: permit
+        description: Configure LP to 110 for ATM
+        match:
+          - "community CL-INGRESS-ATM-LP-110"
+        set:
+          - "local-preference 110"
+      - sequence: 90
+        type: permit
+        description: default-term-permit
+
+custom_atm_router_bgp:
+  # bgp:
+  #   additional_paths:
+  #     receive: True
+  peer_groups:
+  - name: MPLS-OVERLAY-PEERS
+    route_map_in: RM-MANAGE-WITH-COMMUNITIES
+
+custom_atm_prefix_lists:
+  - name: PL-ATM-FAKE-PREFIX
+    sequence_numbers:
+      - sequence: 10
+        action: "permit 10.2.254.0/24"

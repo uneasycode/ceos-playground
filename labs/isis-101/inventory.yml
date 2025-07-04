@@ -20,6 +20,8 @@ all:
           hosts:
             a-pe01:
               ansible_host: 192.168.101.11
+            a-pe02:
+              ansible_host: 192.168.101.12
             b-pe01:
               ansible_host: 192.168.101.21
         network_services:

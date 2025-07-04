@@ -1,4 +1,4 @@
-name: bgp-confederations
+name: isis
 prefix: ""
 
 mgmt:
@@ -16,25 +16,25 @@ topology:
     a-p01:
       kind: ceos
       mgmt-ipv4: 192.168.101.111
-      startup-config: backup/a-p01.cfg
+      startup-config: isis-base-configs/a-p01.cfg
       env:
         TMODE: lacp
     a-p02:
       kind: ceos
       mgmt-ipv4: 192.168.101.112
-      startup-config: backup/a-p02.cfg
+      startup-config: isis-base-configs/a-p02.cfg
       env:
         TMODE: lacp
     b-p01:
       kind: ceos
       mgmt-ipv4: 192.168.101.121
-      startup-config: backup/b-p01.cfg
+      startup-config: isis-base-configs/b-p01.cfg
       env:
         TMODE: lacp
     b-p02:
       kind: ceos
       mgmt-ipv4: 192.168.101.122
-      startup-config: backup/b-p02.cfg
+      startup-config: isis-base-configs/b-p02.cfg
       env:
         TMODE: lacp
 
@@ -43,7 +43,14 @@ topology:
     a-pe01:
       kind: ceos
       mgmt-ipv4: 192.168.101.11
-      startup-config: backup/a-pe01.cfg
+      startup-config: isis-base-configs/a-pe01.cfg
+      # startup-config:
+      env:
+        TMODE: lacp
+    a-pe02:
+      kind: ceos
+      mgmt-ipv4: 192.168.101.12
+      startup-config: isis-base-configs/a-pe02.cfg
       # startup-config:
       env:
         TMODE: lacp
@@ -53,7 +60,7 @@ topology:
     b-pe01:
       kind: ceos
       mgmt-ipv4: 192.168.101.21
-      startup-config: backup/b-pe01.cfg
+      startup-config: isis-base-configs/b-pe01.cfg
       # startup-config:
       env:
         TMODE: lacp
@@ -88,9 +95,12 @@ topology:
   # Site 1 PE
     - endpoints: ["a-pe01:eth1", "a-p01:eth1"]
     - endpoints: ["a-pe01:eth2", "a-p02:eth1"]
+    - endpoints: ["a-pe02:eth1", "a-p01:eth2"]
+    - endpoints: ["a-pe02:eth2", "a-p02:eth2"]
 
   # Site  CE
     - endpoints: ["a-ce01:eth1", "a-pe01:eth4"]
+    - endpoints: ["a-ce01:eth2", "a-pe02:eth4"]
 
   # Site 2 PE
     - endpoints: ["b-pe01:eth1", "b-p01:eth1"]

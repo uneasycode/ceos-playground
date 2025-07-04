@@ -1,0 +1,90 @@
+core_interfaces:
+  p2p_links_ip_pools:
+    - name: core_pool
+      ipv4_pool: 10.255.3.0/24
+
+  p2p_links_profiles:
+    - name: core_profile
+      mtu: 1500
+      isis_metric: 50
+      ip_pool: core_pool
+      isis_circuit_type: level-2
+      isis_authentication_mode: md5
+      isis_authentication_key: $1c$sTNAlR6rKSw=
+
+  p2p_links:
+    # a-pe01 to a-p01 / a-p02
+    - nodes: [ a-pe01, a-p01 ]
+      interfaces: [ Ethernet1, Ethernet1 ]
+      profile: core_profile
+      id: 1
+    - nodes: [ a-pe01, a-p02 ]
+      interfaces: [ Ethernet2, Ethernet1 ]
+      profile: core_profile
+      id: 2
+
+    # S1-PE02 to a-p01 / a-p02
+    - nodes: [ s1-pe02, a-p01 ]
+      interfaces: [ Ethernet1, Ethernet2 ]
+      profile: core_profile
+      id: 3
+    - nodes: [ s1-pe02, a-p02 ]
+      interfaces: [ Ethernet2, Ethernet2 ]
+      profile: core_profile
+      id: 4
+
+    # S1-PE03 to a-p01 / a-p02
+    - nodes: [ s1-pe03, a-p01 ]
+      interfaces: [ Ethernet1, Ethernet3 ]
+      profile: core_profile
+      id: 5
+    - nodes: [ s1-pe03, a-p02 ]
+      interfaces: [ Ethernet2, Ethernet3 ]
+      profile: core_profile
+      id: 6
+
+    # S1-PE04 to a-p01 / a-p02
+    - nodes: [ s1-pe04, a-p01 ]
+      interfaces: [ Ethernet1, Ethernet4 ]
+      profile: core_profile
+      id: 7
+    - nodes: [ s1-pe04, a-p02 ]
+      interfaces: [ Ethernet2, Ethernet4 ]
+      profile: core_profile
+      id: 8
+
+    # b-pe01 to b-p01 / b-p02
+    - nodes: [ b-pe01, b-p01 ]
+      interfaces: [ Ethernet1, Ethernet1 ]
+      profile: core_profile
+      id: 9
+    - nodes: [ b-pe01, b-p02 ]
+      interfaces: [ Ethernet2, Ethernet1 ]
+      profile: core_profile
+      id: 10
+
+
+    - nodes: [ a-p01, b-p01 ]
+      interfaces: [ Ethernet6, Ethernet6 ]
+      profile: core_profile
+      id: 11
+    - nodes: [ a-p02, b-p02 ]
+      interfaces: [ Ethernet6, Ethernet6 ]
+      profile: core_profile
+      id: 12
+    - nodes: [ a-p01, a-p02 ]
+      interfaces: [ Ethernet5, Ethernet5 ]
+      profile: core_profile
+      id: 13
+    - nodes: [ b-p01, b-p02 ]
+      interfaces: [ Ethernet5, Ethernet5 ]
+      profile: core_profile
+      id: 14
+    - nodes: [ a-p01, b-p02 ]
+      interfaces: [ Ethernet7, Ethernet7 ]
+      profile: core_profile
+      id: 15
+
+
+
+

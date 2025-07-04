@@ -1,0 +1,32 @@
+# Managment VRF Name
+management_vrf_name: "MGMT"
+
+# dns domain
+dns_domain: atd.lab
+
+# dns servers.
+name_servers:
+  - 192.168.2.1
+  - 8.8.8.8
+
+# Timezone settings
+timezone: Europe/Paris
+
+# NTP settings
+ntp:
+  local_interface:
+    name: Management0
+    vrf: default
+  servers:
+    - name: 193.52.136.2
+      preferred: True
+      local_interface: Management0
+      vrf: "{{management_vrf_name}}"
+      burst: True
+      iburst: True
+    - name: 5.39.80.51
+      local_interface: Management0
+      vrf: "{{management_vrf_name}}"
+      burst: True
+      iburst: True
+
