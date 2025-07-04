@@ -6,5 +6,7 @@
     - name: Arista Config Load
       arista.eos.eos_config:
         src: "backup/{{ inventory_hostname }}.cfg"
+        replace: config
+
 
 
