@@ -16,25 +16,25 @@ topology:
     a-p01:
       kind: ceos
       mgmt-ipv4: 192.168.101.111
-      startup-config: backup/a-p01.cfg
+      startup-config: bgp-confed-configs/a-p01.cfg
       env:
         TMODE: lacp
     a-p02:
       kind: ceos
       mgmt-ipv4: 192.168.101.112
-      startup-config: backup/a-p02.cfg
+      startup-config: bgp-confed-configs/a-p02.cfg
       env:
         TMODE: lacp
     b-p01:
       kind: ceos
       mgmt-ipv4: 192.168.101.121
-      startup-config: backup/b-p01.cfg
+      startup-config: bgp-confed-configs/b-p01.cfg
       env:
         TMODE: lacp
     b-p02:
       kind: ceos
       mgmt-ipv4: 192.168.101.122
-      startup-config: backup/b-p02.cfg
+      startup-config: bgp-confed-configs/b-p02.cfg
       env:
         TMODE: lacp
 
@@ -43,7 +43,7 @@ topology:
     a-pe01:
       kind: ceos
       mgmt-ipv4: 192.168.101.11
-      startup-config: backup/a-pe01.cfg
+      startup-config: bgp-confed-configs/a-pe01.cfg
       # startup-config:
       env:
         TMODE: lacp
@@ -53,7 +53,7 @@ topology:
     b-pe01:
       kind: ceos
       mgmt-ipv4: 192.168.101.21
-      startup-config: backup/b-pe01.cfg
+      startup-config: bgp-confed-configs/b-pe01.cfg
       # startup-config:
       env:
         TMODE: lacp
