@@ -2,7 +2,7 @@ fabric_name: "backbone"
 
 # OOB Management VRF.
 mgmt_interface_vrf: "{{ management_vrf_name }}"
-mgmt_gateway: "192.168.2.1"
+mgmt_gateway: "192.168.101.1"
 # OOB Management interface.
 mgmt_interface: "Management0"
 # Configure IP routing for the OOB Management VRF.

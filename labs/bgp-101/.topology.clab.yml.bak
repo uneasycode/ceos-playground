@@ -16,25 +16,25 @@ topology:
     as400-1:
       kind: ceos
       mgmt-ipv4: 192.168.101.41
-      #startup-config: bgp-101/as400-1.cfg
+      startup-config: bgp101-config-base/as400-1.cfg
       env:
         TMODE: lacp
     as400-2:
       kind: ceos
       mgmt-ipv4: 192.168.101.42
-      #startup-config: bgp-101/as400-2.cfg
+      startup-config: bgp101-config-base/as400-2.cfg
       env:
         TMODE: lacp
     as400-3:
       kind: ceos
       mgmt-ipv4: 192.168.101.43
-      #startup-config: bgp-101/as400-3.cfg
+      startup-config: bgp101-config-base/as400-3.cfg
       env:
         TMODE: lacp
     as400-4:
       kind: ceos
       mgmt-ipv4: 192.168.101.44
-      #startup-config: bgp-101/as400-4.cfg
+      startup-config: bgp101-config-base/as400-4.cfg
       env:
         TMODE: lacp
 
@@ -43,14 +43,14 @@ topology:
     as100-1:
       kind: ceos
       mgmt-ipv4: 192.168.101.11
-      #startup-config: bgp-101/as100-1.cfg
+      startup-config: bgp101-config-base/as100-1.cfg
       env:
         TMODE: lacp
 
     as100-2:
       kind: ceos
       mgmt-ipv4: 192.168.101.12
-      #startup-config: bgp-101/as100-2.cfg
+      startup-config: bgp101-config-base/as100-2.cfg
       env:
         TMODE: lacp
   # -------------------------------- #
@@ -58,7 +58,7 @@ topology:
     as200:
       kind: ceos
       mgmt-ipv4: 192.168.101.21
-      #startup-config: bgp-101/as200.cfg
+      startup-config: bgp101-config-base/as200.cfg
       env:
         TMODE: lacp
 
@@ -67,7 +67,7 @@ topology:
     as300:
       kind: ceos
       mgmt-ipv4: 192.168.101.31
-      #startup-config: bgp-101/as300.cfg
+      startup-config: bgp101-config-base/as300.cfg
       env:
         TMODE: lacp
 
@@ -76,7 +76,7 @@ topology:
     as500:
       kind: ceos
       mgmt-ipv4: 192.168.101.51
-      #startup-config: bgp-101/as500.cfg
+      startup-config: bgp101-config-base/as500.cfg
       env:
         TMODE: lacp
 
