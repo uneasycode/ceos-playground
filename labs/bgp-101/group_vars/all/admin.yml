@@ -1,0 +1,23 @@
+---
+# device_id: "{{ rid.split('.')[3] }}"
+# hostname: "{{ inventory_hostname }}"
+
+aliases: |
+  alias ale show ip hardware ale routes unprogrammed
+  alias ale6 show ipv6 hardware ale routes unprogrammed
+  alias cc clear counters
+  alias fabric show platform fap fabric rates mbps
+  alias fib show ip hardware fib routes | grep bgp | wc -l
+  alias fib6 show ipv6 hardware fib routes | grep bgp | wc -l
+  alias l3 show platform sand l3 summary
+  alias route6sum show ipv6 route summary
+  alias routesum show ip route summary
+  alias senz show interface counter error | nz
+  alias shmc show int | awk '/^[A-Z]/ { intf = $1 } /, address is/ { print intf, $6 }'
+  alias snz show interface counter | nz
+  alias spd show port-channel %1 detail all
+  alias sli show lacp interface Ethernet %1 detailed
+  alias sqnz show interface counter queue | nz
+  alias srnz show interface counter rate | nz
+  alias summary show bgp summary
+  alias summary6 show ipv6 bgp summary

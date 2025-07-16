@@ -1,0 +1,12 @@
+---
+- name: Gather info
+  hosts: localhost
+  gather_facts: no
+  tasks:
+   - name: Check all running containers
+     become: yes
+     cmd: docker ps --format "{{ \.Names }}"
+     register: dkr_ps
+  
+        
+   - debug: msg="{{dkr_ps}}"

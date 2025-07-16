@@ -1,0 +1,102 @@
+name: bgp-101
+prefix: ""
+
+mgmt:
+  network: internalnet
+  ipv4-subnet: 192.168.101.0/24
+
+topology:
+  kinds:
+    ceos:
+      image: ceos:4.34.1F
+
+  nodes:
+  # -------------------------------- #
+  # AS400 routers
+    as400-1:
+      kind: ceos
+      mgmt-ipv4: 192.168.101.41
+      #startup-config: bgp-101/as400-1.cfg
+      env:
+        TMODE: lacp
+    as400-2:
+      kind: ceos
+      mgmt-ipv4: 192.168.101.42
+      #startup-config: bgp-101/as400-2.cfg
+      env:
+        TMODE: lacp
+    as400-3:
+      kind: ceos
+      mgmt-ipv4: 192.168.101.43
+      #startup-config: bgp-101/as400-3.cfg
+      env:
+        TMODE: lacp
+    as400-4:
+      kind: ceos
+      mgmt-ipv4: 192.168.101.44
+      #startup-config: bgp-101/as400-4.cfg
+      env:
+        TMODE: lacp
+
+  # -------------------------------- #
+  # AS100 routers
+    as100-1:
+      kind: ceos
+      mgmt-ipv4: 192.168.101.11
+      #startup-config: bgp-101/as100-1.cfg
+      env:
+        TMODE: lacp
+
+    as100-2:
+      kind: ceos
+      mgmt-ipv4: 192.168.101.12
+      #startup-config: bgp-101/as100-2.cfg
+      env:
+        TMODE: lacp
+  # -------------------------------- #
+  # AS200 ROUTERS
+    as200:
+      kind: ceos
+      mgmt-ipv4: 192.168.101.21
+      #startup-config: bgp-101/as200.cfg
+      env:
+        TMODE: lacp
+
+  # -------------------------------- #
+  # AS300 ROUTERS
+    as300:
+      kind: ceos
+      mgmt-ipv4: 192.168.101.31
+      #startup-config: bgp-101/as300.cfg
+      env:
+        TMODE: lacp
+
+  # -------------------------------- #
+  # AS500 ROUTERS
+    as500:
+      kind: ceos
+      mgmt-ipv4: 192.168.101.51
+      #startup-config: bgp-101/as500.cfg
+      env:
+        TMODE: lacp
+
+  links:
+  # -------------------------------- #
+  # links 
+    - endpoints: ["as400-1:eth1", "as100-1:eth1"]
+    - endpoints: ["as400-1:eth2", "as100-2:eth2"]
+    - endpoints: ["as400-1:eth3", "as400-2:eth3"]
+    - endpoints: ["as400-1:eth5", "as400-3:eth5"]
+    - endpoints: ["as400-2:eth1", "as500:eth1"]
+    - endpoints: ["as400-2:eth5", "as400-4:eth5"]
+    - endpoints: ["as400-3:eth2", "as100-1:eth2"]
+    - endpoints: ["as400-3:eth1", "as100-2:eth1"]
+    - endpoints: ["as400-3:eth3", "as400-4:eth3"]
+    - endpoints: ["as400-3:eth4", "as200:eth4"]
+    - endpoints: ["as400-4:eth2", "as500:eth2"]
+    - endpoints: ["as400-4:eth4", "as300:eth4"]
+    - endpoints: ["as100-1:eth3", "as500:eth3"]
+    - endpoints: ["as100-2:eth3", "as200:eth3"]
+    - endpoints: ["as200:eth1", "as300:eth1"]
+    - endpoints: ["as300:eth5", "as500:eth5"]
+

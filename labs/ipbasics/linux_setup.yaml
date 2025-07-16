@@ -1,0 +1,29 @@
+---
+- name: Basic IP setup for Alpine linux servers
+  hosts: linux
+  become: yes
+
+  tasks:
+    - name: Install/Check Nginx package
+      package:
+        name: nginx
+        state: present
+
+    - name: Run ip add and route commands to assign IP addresses to host1
+      ansible.builtin.command:
+        cmd: ip addr add 103.0.0.2/24 dev eth1
+        cmd: ip route add 104.0.0.0/24 via 103.0.0.254 dev eth1
+      when: inventory_hostname == "host1"
+
+    - name: Run ip add commands to assign IP addresses to host2
+      ansible.builtin.command:
+        cmd: ip addr add 103.0.0.3/24 dev eth1
+        cmd: ip addr add 104.0.0.3/24 dev eth1
+      when: inventory_hostname == "host2"
+
+    - name: Run ip add commands to assign IP addresses to server
+      ansible.builtin.command:
+        cmd: ip addr add 103.0.0.4/24 dev eth2
+      when: inventory_hostname == "server"
+
+

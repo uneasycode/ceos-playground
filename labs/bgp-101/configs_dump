@@ -1,0 +1,763 @@
+
+gamer@shane-watson-ubuntu:~/Desktop/Lab_Topos/ceos-playground/labs/bgp-101$ ssh as100-1
+Warning: Permanently added 'as100-1' (ED25519) to the list of known hosts.
+Last login: Wed Jul 16 06:41:23 2025 from 192.168.101.1
+as100-1#show run 
+! Command: show running-config
+! device: as100-1 (cEOSLab, EOS-4.34.1F-42424637.4341F (engineering build))
+!
+no aaa root
+aaa authentication policy local allow-nopassword-remote-login
+!
+username admin privilege 15 role network-admin nopassword
+username ansible privilege 15 role network-admin secret sha512 $6$Bzsa1OORmsTrrpHD$vgoe9jwmM6ZT7ntUXXrSM.oNpVmtNyk0FA/FiF2bdndE1fRDQKp/Y4lQ4CLhnUFRBpKyvgGF9JtBhAmmI9fXC/
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname as100-1
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vrf instance MGMT
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+aaa authorization exec default local
+!
+interface Ethernet1
+   no switchport
+   ip address 10.255.3.9/31
+!
+interface Ethernet2
+   no switchport
+   ip address 10.255.3.13/31
+!
+interface Ethernet3
+   no switchport
+   ip address 10.255.3.24/31
+!
+interface Loopback0
+   ip address 10.254.1.1/32
+!
+interface Management0
+   ip address 192.168.101.11/24
+!
+no ip routing
+no ip routing vrf MGMT
+!
+ip route 0.0.0.0/0 192.168.101.1
+!
+router multicast
+   ipv4
+      software-forwarding kernel
+   !
+   ipv6
+      software-forwarding kernel
+!
+management ssh
+   authentication empty-passwords permit
+   !
+   vrf MGMT
+      no shutdown
+!
+end
+as100-1#     exit
+Connection to as100-1 closed.
+gamer@shane-watson-ubuntu:~/Desktop/Lab_Topos/ceos-playground/labs/bgp-101$ ssh as100-2
+Warning: Permanently added 'as100-2' (ED25519) to the list of known hosts.
+Last login: Wed Jul 16 06:41:41 2025 from 192.168.101.1
+as100-2#show run | no-more 
+! Command: show running-config
+! device: as100-2 (cEOSLab, EOS-4.34.1F-42424637.4341F (engineering build))
+!
+no aaa root
+aaa authentication policy local allow-nopassword-remote-login
+!
+username admin privilege 15 role network-admin nopassword
+username ansible privilege 15 role network-admin secret sha512 $6$Bzsa1OORmsTrrpHD$vgoe9jwmM6ZT7ntUXXrSM.oNpVmtNyk0FA/FiF2bdndE1fRDQKp/Y4lQ4CLhnUFRBpKyvgGF9JtBhAmmI9fXC/
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname as100-2
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vrf instance MGMT
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+aaa authorization exec default local
+!
+interface Ethernet1
+   no switchport
+   ip address 10.255.3.15/31
+!
+interface Ethernet2
+   no switchport
+   ip address 10.255.3.11/31
+!
+interface Ethernet3
+   no switchport
+   ip address 10.255.3.26/31
+!
+interface Loopback0
+   ip address 10.254.1.2/32
+!
+interface Management0
+   ip address 192.168.101.12/24
+!
+no ip routing
+no ip routing vrf MGMT
+!
+ip route 0.0.0.0/0 192.168.101.1
+!
+router multicast
+   ipv4
+      software-forwarding kernel
+   !
+   ipv6
+      software-forwarding kernel
+!
+management ssh
+   authentication empty-passwords permit
+   !
+   vrf MGMT
+      no shutdown
+!
+end
+as100-2#exit
+Connection to as100-2 closed.
+gamer@shane-watson-ubuntu:~/Desktop/Lab_Topos/ceos-playground/labs/bgp-101$ ssh as200
+Warning: Permanently added 'as200' (ED25519) to the list of known hosts.
+Last login: Wed Jul 16 06:41:46 2025 from 192.168.101.1
+as200#show run | no-more 
+! Command: show running-config
+! device: as200 (cEOSLab, EOS-4.34.1F-42424637.4341F (engineering build))
+!
+no aaa root
+aaa authentication policy local allow-nopassword-remote-login
+!
+username admin privilege 15 role network-admin nopassword
+username ansible privilege 15 role network-admin secret sha512 $6$Bzsa1OORmsTrrpHD$vgoe9jwmM6ZT7ntUXXrSM.oNpVmtNyk0FA/FiF2bdndE1fRDQKp/Y4lQ4CLhnUFRBpKyvgGF9JtBhAmmI9fXC/
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname as200
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vrf instance MGMT
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+aaa authorization exec default local
+!
+interface Ethernet1
+   no switchport
+   ip address 10.255.3.30/31
+!
+interface Ethernet3
+   no switchport
+   ip address 10.255.3.27/31
+!
+interface Ethernet4
+   no switchport
+   ip address 10.255.3.21/31
+!
+interface Loopback0
+   ip address 10.254.2.1/32
+!
+interface Management0
+   ip address 192.168.101.21/24
+!
+no ip routing
+no ip routing vrf MGMT
+!
+ip route 0.0.0.0/0 192.168.101.1
+!
+router multicast
+   ipv4
+      software-forwarding kernel
+   !
+   ipv6
+      software-forwarding kernel
+!
+management ssh
+   authentication empty-passwords permit
+   !
+   vrf MGMT
+      no shutdown
+!
+end
+as200# exit
+Connection to as200 closed.
+gamer@shane-watson-ubuntu:~/Desktop/Lab_Topos/ceos-playground/labs/bgp-101$ ssh as300
+Warning: Permanently added 'as300' (ED25519) to the list of known hosts.
+Last login: Wed Jul 16 06:41:57 2025 from 192.168.101.1
+as300#show run | no-more 
+! Command: show running-config
+! device: as300 (cEOSLab, EOS-4.34.1F-42424637.4341F (engineering build))
+!
+no aaa root
+aaa authentication policy local allow-nopassword-remote-login
+!
+username admin privilege 15 role network-admin nopassword
+username ansible privilege 15 role network-admin secret sha512 $6$Bzsa1OORmsTrrpHD$vgoe9jwmM6ZT7ntUXXrSM.oNpVmtNyk0FA/FiF2bdndE1fRDQKp/Y4lQ4CLhnUFRBpKyvgGF9JtBhAmmI9fXC/
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname as300
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vrf instance MGMT
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+aaa authorization exec default local
+!
+interface Ethernet1
+   no switchport
+   ip address 10.255.3.31/31
+!
+interface Ethernet4
+   no switchport
+   ip address 10.255.3.23/31
+!
+interface Ethernet5
+   no switchport
+   ip address 10.255.3.28/31
+!
+interface Loopback0
+   ip address 10.254.3.1/32
+!
+interface Management0
+   ip address 192.168.101.31/24
+!
+no ip routing
+no ip routing vrf MGMT
+!
+ip route 0.0.0.0/0 192.168.101.1
+!
+router multicast
+   ipv4
+      software-forwarding kernel
+   !
+   ipv6
+      software-forwarding kernel
+!
+management ssh
+   authentication empty-passwords permit
+   !
+   vrf MGMT
+      no shutdown
+!
+end
+as300#exit
+Connection to as300 closed.
+gamer@shane-watson-ubuntu:~/Desktop/Lab_Topos/ceos-playground/labs/bgp-101$ ssh as400-1
+Warning: Permanently added 'as400-1' (ED25519) to the list of known hosts.
+Last login: Wed Jul 16 06:42:06 2025 from 192.168.101.1
+as400-1#show run | no-more 
+! Command: show running-config
+! device: as400-1 (cEOSLab, EOS-4.34.1F-42424637.4341F (engineering build))
+!
+no aaa root
+aaa authentication policy local allow-nopassword-remote-login
+!
+username admin privilege 15 role network-admin nopassword
+username ansible privilege 15 role network-admin secret sha512 $6$Bzsa1OORmsTrrpHD$vgoe9jwmM6ZT7ntUXXrSM.oNpVmtNyk0FA/FiF2bdndE1fRDQKp/Y4lQ4CLhnUFRBpKyvgGF9JtBhAmmI9fXC/
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname as400-1
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vrf instance MGMT
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+aaa authorization exec default local
+!
+interface Ethernet1
+   no switchport
+   ip address 10.255.3.8/31
+!
+interface Ethernet2
+   no switchport
+   ip address 10.255.3.10/31
+!
+interface Ethernet3
+   no switchport
+   ip address 10.255.3.0/31
+!
+interface Ethernet5
+   no switchport
+   ip address 10.255.3.2/31
+!
+interface Loopback0
+   ip address 10.254.4.1/32
+!
+interface Management0
+   ip address 192.168.101.41/24
+!
+no ip routing
+no ip routing vrf MGMT
+!
+ip route 0.0.0.0/0 192.168.101.1
+!
+router multicast
+   ipv4
+      software-forwarding kernel
+   !
+   ipv6
+      software-forwarding kernel
+!
+management ssh
+   authentication empty-passwords permit
+   !
+   vrf MGMT
+      no shutdown
+!
+end
+as400-1#exit'
+% Invalid input
+as400-1#exit
+Connection to as400-1 closed.
+gamer@shane-watson-ubuntu:~/Desktop/Lab_Topos/ceos-playground/labs/bgp-101$ ssh as400-2
+Warning: Permanently added 'as400-2' (ED25519) to the list of known hosts.
+Last login: Wed Jul 16 06:42:16 2025 from 192.168.101.1
+as400-2#show run |no-more 
+! Command: show running-config
+! device: as400-2 (cEOSLab, EOS-4.34.1F-42424637.4341F (engineering build))
+!
+no aaa root
+aaa authentication policy local allow-nopassword-remote-login
+!
+username admin privilege 15 role network-admin nopassword
+username ansible privilege 15 role network-admin secret sha512 $6$Bzsa1OORmsTrrpHD$vgoe9jwmM6ZT7ntUXXrSM.oNpVmtNyk0FA/FiF2bdndE1fRDQKp/Y4lQ4CLhnUFRBpKyvgGF9JtBhAmmI9fXC/
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname as400-2
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vrf instance MGMT
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+aaa authorization exec default local
+!
+interface Ethernet1
+   no switchport
+   ip address 10.255.3.16/31
+!
+interface Ethernet3
+   no switchport
+   ip address 10.255.3.1/31
+!
+interface Ethernet5
+   no switchport
+   ip address 10.255.3.4/31
+!
+interface Loopback0
+   ip address 10.254.4.2/32
+!
+interface Management0
+   ip address 192.168.101.42/24
+!
+no ip routing
+no ip routing vrf MGMT
+!
+ip route 0.0.0.0/0 192.168.101.1
+!
+router multicast
+   ipv4
+      software-forwarding kernel
+   !
+   ipv6
+      software-forwarding kernel
+!
+management ssh
+   authentication empty-passwords permit
+   !
+   vrf MGMT
+      no shutdown
+!
+end
+as400-2#exit
+Connection to as400-2 closed.
+gamer@shane-watson-ubuntu:~/Desktop/Lab_Topos/ceos-playground/labs/bgp-101$ ssh as400-3
+Warning: Permanently added 'as400-3' (ED25519) to the list of known hosts.
+Last login: Wed Jul 16 06:42:25 2025 from 192.168.101.1
+as400-3#show run | no-more 
+! Command: show running-config
+! device: as400-3 (cEOSLab, EOS-4.34.1F-42424637.4341F (engineering build))
+!
+no aaa root
+aaa authentication policy local allow-nopassword-remote-login
+!
+username admin privilege 15 role network-admin nopassword
+username ansible privilege 15 role network-admin secret sha512 $6$Bzsa1OORmsTrrpHD$vgoe9jwmM6ZT7ntUXXrSM.oNpVmtNyk0FA/FiF2bdndE1fRDQKp/Y4lQ4CLhnUFRBpKyvgGF9JtBhAmmI9fXC/
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname as400-3
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vrf instance MGMT
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+aaa authorization exec default local
+!
+interface Ethernet1
+   no switchport
+   ip address 10.255.3.14/31
+!
+interface Ethernet2
+   no switchport
+   ip address 10.255.3.12/31
+!
+interface Ethernet3
+   no switchport
+   ip address 10.255.3.6/31
+!
+interface Ethernet4
+   no switchport
+   ip address 10.255.3.20/31
+!
+interface Ethernet5
+   no switchport
+   ip address 10.255.3.3/31
+!
+interface Loopback0
+   ip address 10.254.4.3/32
+!
+interface Management0
+   ip address 192.168.101.43/24
+!
+no ip routing
+no ip routing vrf MGMT
+!
+ip route 0.0.0.0/0 192.168.101.1
+!
+router multicast
+   ipv4
+      software-forwarding kernel
+   !
+   ipv6
+      software-forwarding kernel
+!
+management ssh
+   authentication empty-passwords permit
+   !
+   vrf MGMT
+      no shutdown
+!
+end
+as400-3#exit
+Connection to as400-3 closed.
+gamer@shane-watson-ubuntu:~/Desktop/Lab_Topos/ceos-playground/labs/bgp-101$ ssh as400-4
+Warning: Permanently added 'as400-4' (ED25519) to the list of known hosts.
+Last login: Wed Jul 16 06:42:36 2025 from 192.168.101.1
+as400-4#show run | no-more 
+! Command: show running-config
+! device: as400-4 (cEOSLab, EOS-4.34.1F-42424637.4341F (engineering build))
+!
+no aaa root
+aaa authentication policy local allow-nopassword-remote-login
+!
+username admin privilege 15 role network-admin nopassword
+username ansible privilege 15 role network-admin secret sha512 $6$Bzsa1OORmsTrrpHD$vgoe9jwmM6ZT7ntUXXrSM.oNpVmtNyk0FA/FiF2bdndE1fRDQKp/Y4lQ4CLhnUFRBpKyvgGF9JtBhAmmI9fXC/
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname as400-4
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vrf instance MGMT
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+aaa authorization exec default local
+!
+interface Ethernet2
+   no switchport
+   ip address 10.255.3.18/31
+!
+interface Ethernet3
+   no switchport
+   ip address 10.255.3.7/31
+!
+interface Ethernet4
+   no switchport
+   ip address 10.255.3.22/31
+!
+interface Ethernet5
+   no switchport
+   ip address 10.255.3.5/31
+!
+interface Loopback0
+   ip address 10.254.4.4/32
+!
+interface Management0
+   ip address 192.168.101.44/24
+!
+no ip routing
+no ip routing vrf MGMT
+!
+ip route 0.0.0.0/0 192.168.101.1
+!
+router multicast
+   ipv4
+      software-forwarding kernel
+   !
+   ipv6
+      software-forwarding kernel
+!
+management ssh
+   authentication empty-passwords permit
+   !
+   vrf MGMT
+      no shutdown
+!
+end
+as400-4#exit
+Connection to as400-4 closed.
+gamer@shane-watson-ubuntu:~/Desktop/Lab_Topos/ceos-playground/labs/bgp-101$ ssh as500
+Warning: Permanently added 'as500' (ED25519) to the list of known hosts.
+ssLast login: Wed Jul 16 06:42:47 2025 from 192.168.101.1
+howshoshow run 
+! Command: show running-config
+! device: as500 (cEOSLab, EOS-4.34.1F-42424637.4341F (engineering build))
+!
+no aaa root
+aaa authentication policy local allow-nopassword-remote-login
+!
+username admin privilege 15 role network-admin nopassword
+username ansible privilege 15 role network-admin secret sha512 $6$Bzsa1OORmsTrrpHD$vgoe9jwmM6ZT7ntUXXrSM.oNpVmtNyk0FA/FiF2bdndE1fRDQKp/Y4lQ4CLhnUFRBpKyvgGF9JtBhAmmI9fXC/
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname as500
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vrf instance MGMT
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+aaa authorization exec default local
+!
+interface Ethernet1
+   no switchport
+   ip address 10.255.3.17/31
+!
+interface Ethernet2
+   no switchport
+   ip address 10.255.3.19/31
+!
+interface Ethernet3
+   no switchport
+   ip address 10.255.3.25/31
+!
+interface Ethernet5
+   no switchport
+   ip address 10.255.3.29/31
+!
+interface Loopback0
+   ip address 10.254.5.1/32
+!
+interface Management0
+   ip address 192.168.101.51/24
+!
+no ip routing
+no ip routing vrf MGMT
+!
+ip route 0.0.0.0/0 192.168.101.1
+!
+router multicast
+   ipv4
+      software-forwarding kernel
+   !
+   ipv6
+      software-forwarding kernel
+!
+management ssh
+   authentication empty-passwords permit
+   !
+   vrf MGMT
+      no shutdown
+!
+end
+as500#     exit
+Connection to as500 closed.
+gamer@shane-watson-ubuntu:~/Desktop/Lab_Topos/ceos-playground/labs/bgp-101$ 
+

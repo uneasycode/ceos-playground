@@ -1,0 +1,27 @@
+all:
+  children:
+    backbone:
+      children:
+        backbone_p_routers:
+          vars:
+            type: "p"
+          hosts:
+            as100-1:
+              ansible_host: 192.168.101.11
+            as100-2:
+              ansible_host: 192.168.101.12
+            as200:
+              ansible_host: 192.168.101.21
+            as300:
+              ansible_host: 192.168.101.31
+            as400-1:
+              ansible_host: 192.168.101.41
+            as400-2:
+              ansible_host: 192.168.101.42
+            as400-3:
+              ansible_host: 192.168.101.43
+            as400-4:
+              ansible_host: 192.168.101.44
+            as500:
+              ansible_host: 192.168.101.51  
+

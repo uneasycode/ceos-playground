@@ -1,33 +1,16 @@
-all:
-  children:
-    backbone:
-      children:
-        backbone_p_routers:
-          vars:
-            type: "p"
-          hosts:
-            a-p01:
-              ansible_host: 192.168.101.111
-            a-p02:
-              ansible_host: 192.168.101.112
-            b-p01:
-              ansible_host: 192.168.101.121
-            b-p02:
-              ansible_host: 192.168.101.122
-        backbone_pe_routers:
-          vars:
-            type: "pe"
-          hosts:
-            a-pe01:
-              ansible_host: 192.168.101.11
-            a-pe02:
-              ansible_host: 192.168.101.12
-            b-pe01:
-              ansible_host: 192.168.101.21
-        network_services:
-          children:
-            backbone_pe_routers:
- 
-        # network_services:
-        #   children:
-        #     backbone_pe_routers:
+linux:
+  hosts:
+    host1:
+      ansible_host: 192.168.101.2
+    host2:
+      ansible_host: 192.168.101.3
+    server:
+      ansible_host: 192.168.101.4
+ceos:
+  hosts:
+    router:
+      ansible_host: 192.168.101.101
+    switch:
+      ansible_host: 192.168.101.102
+
+
