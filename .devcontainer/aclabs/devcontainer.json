@@ -11,6 +11,8 @@
   "settings": {
     "terminal.integrated.shell.linux": "/bin/bash"
   },
+  "envFile": ".devcontainer/.env",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
   "customizations": {
     "vscode": {
       "settings": {
@@ -23,6 +25,9 @@
         "terminal.integrated.defaultProfile.linux": "bash"
       },
       "extensions": [
+        "ms-python.python",
+        "redhat.ansible",
+        "ms-azuretools.vscode-docker",
         "srl-labs.vscode-containerlab"
       ]
     }

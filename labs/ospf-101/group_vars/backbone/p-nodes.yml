@@ -28,3 +28,15 @@ p:
       mpls_overlay_role: server
       overlay_address_families:
         - "evpn"
+    - name: as400-1
+      id: 5
+      mgmt_ip: 192.168.101.41/24
+    - name: as400-2
+      id: 6
+      mgmt_ip: 192.168.101.42/24
+    - name: as400-3
+      id: 7
+      mgmt_ip: 192.168.101.43/24
+    - name: as400-4
+      id: 8
+      mgmt_ip: 192.168.101.44/24
