@@ -1,0 +1,4 @@
+alias ssh_host1='docker exec -it host1 bash'
+alias ssh_host2='docker exec -it host2 bash'
+alias ssh_server='docker exec -it server bash'
+

@@ -24,7 +24,7 @@ if [[ -n "$ARISTA_TOKEN" ]]; then
     echo "🗜️ Decompressing $FILE..."
     unxz -k "$FILE"
     TARFILE="${FILE%.xz}"
-    docker import "$TARFILE" ceos:latest
+    docker import "$TARFILE" ceos:4.34.1F
     echo "✅ x86 image imported into Docker."
   else
     echo "⚠️  No x86 tarball found!"
