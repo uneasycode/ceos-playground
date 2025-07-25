@@ -12,12 +12,12 @@ sudo apt-get install -y --no-install-recommends \
     git gnupg lsb-release curl unzip iproute2 iputils-ping \
     software-properties-common jq tshark xz-utils
 
-ARISTA_TOKEN=45a3e6194305ac2261e8da6d4d4b0d13
+ARISTA_TOKEN="45a3e6194305ac2261e8da6d4d4b0d13"
 
 if [[ -n "$ARISTA_TOKEN" ]]; then
 
   echo "🧠 Downloading cEOS-lab for x86..."
-  ardl --token "$ARISTA_TOKEN" get eos --format cEOS --version 4.34.1F
+  ardl --token $ARISTA_TOKEN get eos --format cEOS --version 4.34.1F
 
   FILE=$(ls cEOS-lab-*.tar.xz 2>/dev/null | head -n 1)
   if [[ -n "$FILE" ]]; then
