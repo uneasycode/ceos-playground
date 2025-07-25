@@ -1,0 +1,15 @@
+# The generated inventory is assumed to be used from the clab host.
+# Hence no http proxy should be used. Therefore we make sure the http
+# module does not attempt using any global http proxy.
+ansible_connection: httpapi
+ansible_httpapi_port: 443
+ansible_httpapi_use_proxy: false
+ansible_httpapi_host: '{{ ansible_host }}'
+ansible_httpapi_use_ssl: true
+ansible_httpapi_validate_certs: false
+
+ansible_network_os: eos
+ansible_become_method: enable
+
+ansible_user: ansible
+ansible_password: ansible

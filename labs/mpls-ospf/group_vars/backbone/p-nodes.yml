@@ -1,0 +1,42 @@
+p:
+  defaults:
+    platform: ceos
+    loopback_ipv4_pool: 10.255.0.0/27
+    mpls_route_reflectors: [ a-p01, b-p02]
+    # mpls_overlay_role: server
+    # overlay_address_families:
+    #   - "evpn"
+
+  nodes:
+    - name: a-p01
+      id: 1
+      mgmt_ip: 192.168.2.111/24
+      mpls_overlay_role: server
+      evpn_role: server
+      overlay_address_families:
+        - "evpn"
+    - name: a-p02
+      id: 2
+      mgmt_ip: 192.168.2.112/24
+    - name: b-p01
+      id: 3
+      mgmt_ip: 192.168.2.121/24
+    - name: b-p02
+      id: 4
+      mgmt_ip: 192.168.2.122/24
+      evpn_role: server
+      mpls_overlay_role: server
+      overlay_address_families:
+        - "evpn"
+    - name: as400-1
+      id: 5
+      mgmt_ip: 192.168.101.41/24
+    - name: as400-2
+      id: 6
+      mgmt_ip: 192.168.101.42/24
+    - name: as400-3
+      id: 7
+      mgmt_ip: 192.168.101.43/24
+    - name: as400-4
+      id: 8
+      mgmt_ip: 192.168.101.44/24
