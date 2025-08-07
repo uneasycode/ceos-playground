@@ -12,7 +12,7 @@
     "terminal.integrated.shell.linux": "/bin/bash"
   },
   "envFile": ".devcontainer/.env",
-  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postCreateCommand": "bash .devcontainer/aclabs/post-create.sh",
   "customizations": {
     "vscode": {
       "settings": {
