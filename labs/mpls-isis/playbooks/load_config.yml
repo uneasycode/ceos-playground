@@ -1,0 +1,12 @@
+---
+- name: Load Network Device Configs
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Arista Config Load
+      arista.eos.eos_config:
+        src: "/home/gamer/Desktop/Lab_Topos/ceos-playground/labs/isis-101/isis-flat-l2/{{ inventory_hostname }}.cfg"
+        replace: config
+
+
+

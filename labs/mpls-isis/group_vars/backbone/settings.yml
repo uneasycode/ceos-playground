@@ -1,0 +1,74 @@
+fabric_name: "backbone"
+
+# OOB Management VRF.
+mgmt_interface_vrf: "{{ management_vrf_name }}"
+mgmt_gateway: "192.168.2.1"
+# OOB Management interface.
+mgmt_interface: "Management0"
+# Configure IP routing for the OOB Management VRF.
+mgmt_vrf_routing: False
+mgmt_destination_networks:
+  - 10.73.0.0/16
+
+# Backbone routing protocols
+underlay_routing_protocol: "isis-sr"
+overlay_routing_protocol: "ibgp"
+
+# interface MTU. Configure to 1500 for cEOS-lab
+p2p_uplinks_mtu: 1500
+
+# BGP AS number for Backbone control plane
+bgp_as: "65000"
+
+bgp_peer_groups:
+  mpls_overlay_peers:
+    # password: arista
+    password: "Q4fqtbqcZ7oQuKfuWtNGRQ=="
+
+# FIXME: This is a temporary solution to avoid the issue with the
+# Extension to get a fully configured
+# neighbor default encapsulation mpls next-hop-self source-interface Loopback0
+# Reference to Arista BUG 759416
+# If not, only encapsulation mpls is configured with the key 'default_evpn_encapsulation: mpls'
+custom_core_router_bgp:
+  as_notation: "asdot"
+  address_family_evpn:
+    peer_groups:
+      - name: "MPLS-OVERLAY-PEERS"
+        encapsulation: "mpls"
+    neighbor_default:
+      encapsulation: "mpls"
+      next_hop_self_source_interface: "Loopback0"
+
+# ISIS SR configuration
+# Implement basic enforcements.
+custom_core_router_isis:
+  graceful_restart:
+    enabled: True
+  timers:
+    local_convergence:
+      protected_prefixes: True
+      delay: 10000
+  set_overload_bit:
+    # enabled: True
+    on_startup:
+      # If delay is set, it override the wait_for_bgp.
+      # delay: 1800
+      wait_for_bgp:
+        enabled: True
+  spf_interval:
+    interval: 1
+    # interval_unit: "milliseconds"
+    wait_interval: 50
+    hold_interval: 100
+  advertise:
+    passive_only: True
+  address_family_ipv4:
+    enabled: True
+    fast_reroute_ti_lfa:
+      mode: "link-protection"
+      level: "level-2"
+  segment_routing_mpls:
+    enabled: True
+    # Not yet supported
+    # adjacency-segment allocation sr-peers backup-eligible

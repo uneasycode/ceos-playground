@@ -1,0 +1,4 @@
+custom_irb_router_bgp:
+  vlans:
+    - id: 1101
+      eos_cli: "redistribute router-mac system default-gateway"
