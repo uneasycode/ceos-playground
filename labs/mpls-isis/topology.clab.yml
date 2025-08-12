@@ -16,25 +16,25 @@ topology:
     a-p01:
       kind: ceos
       mgmt-ipv4: 192.168.101.111
-      startup-config: isis-flat-l2-config/a-p01.cfg
+      startup-config: mpls-isis-flat-rsvp/a-p01.cfg
       env:
         TMODE: lacp
     a-p02:
       kind: ceos
       mgmt-ipv4: 192.168.101.112
-      startup-config: isis-flat-l2-config/a-p02.cfg
+      startup-config: mpls-isis-flat-rsvp/a-p02.cfg
       env:
         TMODE: lacp
     b-p01:
       kind: ceos
       mgmt-ipv4: 192.168.101.121
-      startup-config: isis-flat-l2-config/b-p01.cfg
+      startup-config: mpls-isis-flat-rsvp/b-p01.cfg
       env:
         TMODE: lacp
     b-p02:
       kind: ceos
       mgmt-ipv4: 192.168.101.122
-      startup-config: isis-flat-l2-config/b-p02.cfg
+      startup-config: mpls-isis-flat-rsvp/b-p02.cfg
       env:
         TMODE: lacp
 
@@ -43,14 +43,14 @@ topology:
     a-pe01:
       kind: ceos
       mgmt-ipv4: 192.168.101.11
-      startup-config: isis-flat-l2-config/a-pe01.cfg
+      startup-config: mpls-isis-flat-rsvp/a-pe01.cfg
       # startup-config:
       env:
         TMODE: lacp
     a-pe02:
       kind: ceos
       mgmt-ipv4: 192.168.101.12
-      startup-config: isis-flat-l2-config/a-pe02.cfg
+      startup-config: mpls-isis-flat-rsvp/a-pe02.cfg
       # startup-config:
       env:
         TMODE: lacp
@@ -60,7 +60,7 @@ topology:
     b-pe01:
       kind: ceos
       mgmt-ipv4: 192.168.101.21
-      startup-config: isis-flat-l2-config/b-pe01.cfg
+      startup-config: mpls-isis-flat-rsvp/b-pe01.cfg
       # startup-config:
       env:
         TMODE: lacp
