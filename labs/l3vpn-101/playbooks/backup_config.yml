@@ -7,5 +7,5 @@
       arista.eos.eos_config:
         backup: true
         backup_options:
-          filename: "{{ inventory_hostname }}.cfg"
+          filename: "../../l3vpn-configs/{{ inventory_hostname }}.cfg"
 
