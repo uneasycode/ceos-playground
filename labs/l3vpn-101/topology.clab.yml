@@ -70,7 +70,7 @@ topology:
     a-ce01:
       kind: ceos
       mgmt-ipv4: 192.168.101.211
-      startup-config: l3vpn-configs/b-pe01.cfg
+      startup-config: l3vpn-configs/a-pe01.cfg
       # startup-config:
       env:
         TMODE: lacp
@@ -80,7 +80,7 @@ topology:
     b-ce01:
       kind: ceos
       mgmt-ipv4: 192.168.101.221
-      startup-config: l3vpn-configs/b-pe01.cfg
+      startup-config: l3vpn-configs/b-ce01.cfg
       # startup-config:
       env:
         TMODE: lacp
