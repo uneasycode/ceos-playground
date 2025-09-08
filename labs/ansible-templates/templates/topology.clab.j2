@@ -1,0 +1,30 @@
+name: {{ topology_name }}
+prefix: ""
+
+mgmt:
+  network: {{ mgmt_network }}
+  ipv4-subnet: {{ mgmt_subnet }}
+
+topology:
+  kinds:
+    ceos:
+      image: {{ ceos_image }}
+
+  nodes:
+{% for node in nodes %}
+  # -------------------------------- #
+  # {{ node.description }}
+    {{ node.name }}:
+      kind: ceos
+      mgmt-ipv4: {{ node.mgmt_ipv4 }}
+      startup-config: {{ node.startup_config }}
+      env:
+        TMODE: lacp
+{% endfor %}
+
+  links:
+{% for link in links %}
+  # -------------------------------- #
+  # {{ link.description }}
+    - endpoints: {{ link.endpoints }}
+{% endfor %}

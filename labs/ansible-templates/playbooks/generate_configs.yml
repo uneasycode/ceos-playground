@@ -1,0 +1,48 @@
+---
+- name: Generate Router Configurations from Templates
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Include router-specific variables
+      include_vars:
+        file: "../vars/{{ router_type }}_router_vars.yml"
+      when: router_type is defined
+
+    - name: Set router-specific facts
+      set_fact:
+        router_id: "{{ hostvars[inventory_hostname].router_id | default('10.255.1.1') }}"
+        management_ipv4: "{{ hostvars[inventory_hostname].management_ipv4 | default('192.168.101.10') }}"
+        asn: "{{ hostvars[inventory_hostname].asn | default('65000') }}"
+        isis_net: "{{ hostvars[inventory_hostname].isis_net | default('49.0001.0102.5500.1001.00') }}"
+        node_segment_index: "{{ hostvars[inventory_hostname].node_segment_index | default('1') }}"
+        bgp_neighbor: "{{ hostvars[inventory_hostname].bgp_neighbor | default('10.255.1.5') }}"
+        ce_neighbor: "{{ hostvars[inventory_hostname].ce_neighbor | default('10.1.22.2') }}"
+        ce_asn: "{{ hostvars[inventory_hostname].ce_asn | default('65002') }}"
+        vpn_loopback: "{{ hostvars[inventory_hostname].vpn_loopback | default('10.1.255.1') }}"
+        virtual_ip: "{{ hostvars[inventory_hostname].virtual_ip | default('10.1.1.1') }}"
+
+    - name: Set interfaces for current router
+      set_fact:
+        interfaces: "{{ hostvars[inventory_hostname].interfaces | default([]) }}"
+
+    - name: Generate router configuration
+      template:
+        src: "../templates/router_config.j2"
+        dest: "../output/{{ inventory_hostname }}.cfg"
+      when: router_type is defined
+
+- name: Generate Topology File
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Generate Containerlab topology
+      template:
+        src: "../templates/topology.clab.j2"
+        dest: "../output/topology.clab.yml"
+      vars:
+        topology_name: "{{ topology_name | default('generated-lab') }}"
+        mgmt_network: "{{ mgmt_network | default('internalnet') }}"
+        mgmt_subnet: "{{ mgmt_subnet | default('192.168.101.0/24') }}"
+        ceos_image: "{{ ceos_image | default('ceos:4.34.1F') }}"
+        nodes: "{{ topology_nodes | default([]) }}"
+        links: "{{ topology_links | default([]) }}"

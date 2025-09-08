@@ -24,6 +24,14 @@ all:
               ansible_host: 192.168.101.12
             b-pe01:
               ansible_host: 192.168.101.21
+        asbr_routers:
+          vars:
+            type: "asbr"
+          hosts:
+            a-asbr:
+              ansible_host: 192.168.101.13
+            b-asbr:
+              ansible_host: 192.168.101.22
         ce_routers:
           vars:
             type: "ce"
@@ -35,7 +43,3 @@ all:
         network_services:
           children:
             backbone_pe_routers:
- 
-        # network_services:
-        #   children:
-        #     backbone_pe_routers:

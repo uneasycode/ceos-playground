@@ -1,0 +1,54 @@
+# Variables for P (Provider) router configuration
+eos_version: "4.34.1F"
+ansible_secret: "$6$Bzsa1OORmsTrrpHD$vgoe9jwmM6ZT7ntUXXrSM.oNpVmtNyk0FA/FiF2bdndE1fRDQKp/Y4lQ4CLhnUFRBpKyvgGF9JtBhAmmI9fXC/"
+dns_domain: "atd.lab"
+timezone: "Europe/Paris"
+router_type: "p"
+
+# VRFs
+vrfs: []
+
+# Interfaces (will be populated per router)
+interfaces: []
+
+# Loopbacks
+loopbacks:
+  - id: 0
+    description: "ROUTER_ID"
+    ip_address: "{{ router_id }}/32"
+    node_segment: "{{ node_segment_index }}"
+    isis_enable: "CORE"
+    isis_passive: true
+
+# Management IP (will be set per router)
+mgmt_ip: "{{ management_ipv4 }}"
+
+# VLANs
+vlans: []
+
+# SVIs
+svis: []
+
+# Prefix lists
+prefix_lists: []
+
+# Community lists
+community_lists: []
+
+# Route maps
+route_maps: []
+
+# BGP configuration
+bgp: null
+
+# ISIS configuration
+isis:
+  process: "CORE"
+  net: "{{ isis_net }}"
+  router_id: "{{ router_id }}"
+  type: "level-2"
+  max_paths: 4
+  level: "level-2"
+
+# OSPF configuration
+ospfs: []

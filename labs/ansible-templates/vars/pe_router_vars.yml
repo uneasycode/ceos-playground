@@ -1,0 +1,130 @@
+# Variables for PE (Provider Edge) router configuration
+eos_version: "4.34.1F"
+ansible_secret: "$6$Bzsa1OORmsTrrpHD$vgoe9jwmM6ZT7ntUXXrSM.oNpVmtNyk0FA/FiF2bdndE1fRDQKp/Y4lQ4CLhnUFRBpKyvgGF9JtBhAmmI9fXC/"
+dns_domain: "atd.lab"
+timezone: "Europe/Paris"
+router_type: "pe"
+
+# VRFs
+vrfs:
+  - name: "TEST"
+    rd: "{{ asn }}:100"
+    rt_import: "vpn-ipv4 {{ asn }}:100"
+    rt_export: "vpn-ipv4 {{ asn }}:100"
+
+# Interfaces (will be populated per router)
+interfaces: []
+
+# Loopbacks
+loopbacks:
+  - id: 0
+    description: "ROUTER_ID"
+    ip_address: "{{ router_id }}/32"
+    node_segment: "{{ node_segment_index }}"
+    isis_enable: "CORE"
+    isis_passive: true
+  - id: 1011
+    description: "ETHERNET_VPN_IRB"
+    ip_address: "{{ vpn_loopback }}/32"
+    vrf: "TEST"
+
+# Management IP (will be set per router)
+mgmt_ip: "{{ management_ipv4 }}"
+
+# VLANs
+vlans:
+  - id: 1101
+    name: "ETHERNET_VPN_IRB_S1_CE01-02"
+
+# SVIs
+svis:
+  - id: 1101
+    description: "ETHERNET_VPN_IRB_S1_CE01-02"
+    vrf: "IRB"
+    ip_address: "virtual {{ virtual_ip }}/24"
+
+# Prefix lists
+prefix_lists:
+  - name: "PL-ATM-FAKE-PREFIX"
+    sequences:
+      - id: 10
+        action: "permit"
+        prefix: "10.2.254.0/24"
+
+# Community lists
+community_lists:
+  - name: "CL-INGRESS-ATM-LP-110"
+    action: "permit"
+    community: "{{ asn }}:10110"
+  - name: "CL-INGRESS-ATM-LP-90"
+    action: "permit"
+    community: "{{ asn }}:10090"
+
+# Route maps
+route_maps:
+  - name: "RM-BGP-TO-OSPF"
+    action: "permit"
+    sequence: 10
+    description: "Redistribute BGP to OSPF"
+    match_ip_address: "prefix-list PL-ATM-FAKE-PREFIX"
+    set_ospf_bit: "dn"
+    set_tag: 1205
+  - name: "RM-MANAGE-WITH-COMMUNITIES"
+    action: "permit"
+    sequence: 10
+    description: "Configure LP to 90 for ATM"
+    match_community: "CL-INGRESS-ATM-LP-90"
+    set_local_preference: 90
+  - name: "RM-MANAGE-WITH-COMMUNITIES"
+    action: "permit"
+    sequence: 20
+    description: "Configure LP to 110 for ATM"
+    match_community: "CL-INGRESS-ATM-LP-110"
+    set_local_preference: 110
+  - name: "RM-MANAGE-WITH-COMMUNITIES"
+    action: "permit"
+    sequence: 90
+    description: "default-term-permit"
+
+# BGP configuration
+bgp:
+  asn: "{{ asn }}"
+  neighbors:
+    - ip: "{{ bgp_neighbor }}"
+      remote_as: "{{ asn }}"
+      update_source: "Loopback0"
+      send_community: "extended"
+  redistribute_connected: true
+  redistribute_ospf: true
+  address_families:
+    - family: "vpn-ipv4"
+      neighbors:
+        - ip: "{{ bgp_neighbor }}"
+      next_hop_self: "Loopback0"
+  vrfs:
+    - name: "TEST"
+      rd: "{{ asn }}:100"
+      rt_import: "vpn-ipv4 {{ asn }}:100"
+      rt_export: "vpn-ipv4 {{ asn }}:100"
+      neighbors:
+        - ip: "{{ ce_neighbor }}"
+          remote_as: "{{ ce_asn }}"
+          send_community: "extended"
+          address_family: "ipv4"
+      redistribute_connected: true
+
+# ISIS configuration
+isis:
+  process: "CORE"
+  net: "{{ isis_net }}"
+  router_id: "{{ router_id }}"
+  type: "level-2"
+  max_paths: 4
+  level: "level-2"
+
+# OSPF configuration
+ospfs:
+  - process: 2
+    vrf: "TEST"
+    redistribute_bgp: true
+    max_lsa: 12000

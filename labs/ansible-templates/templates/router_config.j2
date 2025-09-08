@@ -1,0 +1,257 @@
+! Command: show running-config
+! device: {{ inventory_hostname }} (cEOSLab, EOS-{{ eos_version }})
+!
+no aaa root
+aaa authentication policy local allow-nopassword-remote-login
+!
+username admin privilege 15 role network-admin nopassword
+username ansible privilege 15 role network-admin secret sha512 {{ ansible_secret }}
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+hostname {{ inventory_hostname }}
+ip name-server vrf MGMT 8.8.8.8
+ip name-server vrf MGMT 192.168.2.1
+dns domain {{ dns_domain }}
+!
+spanning-tree mode none
+!
+{% if router_type == 'p' %}
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+{% endif %}
+clock timezone {{ timezone }}
+!
+{% for vrf in vrfs %}
+vrf instance {{ vrf.name }}
+{% if vrf.rd %}   rd {{ vrf.rd }}
+{% endif %}
+{% if vrf.rt_import %}   route-target import {{ vrf.rt_import }}
+{% endif %}
+{% if vrf.rt_export %}   route-target export {{ vrf.rt_export }}
+{% endif %}
+!
+{% endfor %}
+aaa authorization exec default local
+!
+{% for interface in interfaces %}
+interface {{ interface.name }}
+{% if interface.description %}   description {{ interface.description }}
+{% endif %}
+{% if interface.mtu %}   mtu {{ interface.mtu }}
+{% endif %}
+{% if interface.switchport is defined and not interface.switchport %}   no switchport
+{% endif %}
+{% if interface.ip_address %}   ip address {{ interface.ip_address }}
+{% endif %}
+{% if interface.vrf %}   vrf {{ interface.vrf }}
+{% endif %}
+{% if interface.isis_enable %}   isis enable {{ interface.isis_enable }}
+{% endif %}
+{% if interface.isis_circuit_type %}   isis circuit-type {{ interface.isis_circuit_type }}
+{% endif %}
+{% if interface.isis_metric %}   isis metric {{ interface.isis_metric }}
+{% endif %}
+{% if interface.isis_hello_padding %}   isis hello padding
+{% endif %}
+{% if interface.isis_network %}   isis network {{ interface.isis_network }}
+{% endif %}
+{% if interface.isis_auth_mode %}   isis authentication mode {{ interface.isis_auth_mode }}
+{% endif %}
+{% if interface.isis_auth_key %}   isis authentication key {{ interface.isis_auth_key }}
+{% endif %}
+{% if interface.ip_ospf_area %}   ip ospf area {{ interface.ip_ospf_area }}
+{% endif %}
+!
+{% endfor %}
+!
+{% for loopback in loopbacks %}
+interface Loopback{{ loopback.id }}
+   description {{ loopback.description }}
+   ip address {{ loopback.ip_address }}
+{% if loopback.node_segment %}   node-segment ipv4 index {{ loopback.node_segment }}
+{% endif %}
+{% if loopback.isis_enable %}   isis enable {{ loopback.isis_enable }}
+{% endif %}
+{% if loopback.isis_passive %}   isis passive
+{% endif %}
+{% if loopback.vrf %}   vrf {{ loopback.vrf }}
+{% endif %}
+!
+{% endfor %}
+!
+interface Management0
+   description OOB_MANAGEMENT
+   vrf MGMT
+   ip address {{ mgmt_ip }}/24
+!
+{% for vlan in vlans %}
+vlan {{ vlan.id }}
+   name {{ vlan.name }}
+!
+{% endfor %}
+!
+{% for svi in svis %}
+interface Vlan{{ svi.id }}
+   description {{ svi.description }}
+{% if svi.vrf %}   vrf {{ svi.vrf }}
+{% endif %}
+{% if svi.ip_address %}   ip address {{ svi.ip_address }}
+{% endif %}
+{% if svi.ip_ospf_network %}   ip ospf network {{ svi.ip_ospf_network }}
+{% endif %}
+{% if svi.ip_ospf_area %}   ip ospf area {{ svi.ip_ospf_area }}
+{% endif %}
+!
+{% endfor %}
+!
+ip virtual-router mac-address 00:1c:73:00:dc:00
+!
+ip routing
+{% for vrf in vrfs %}
+ip routing vrf {{ vrf.name }}
+{% endfor %}
+no ip routing vrf MGMT
+!
+{% for prefix_list in prefix_lists %}
+ip prefix-list {{ prefix_list.name }}
+{% for seq in prefix_list.sequences %}
+   seq {{ seq.id }} {{ seq.action }} {{ seq.prefix }}
+{% endfor %}
+!
+{% endfor %}
+!
+{% for community_list in community_lists %}
+ip community-list {{ community_list.name }} {{ community_list.action }} {{ community_list.community }}
+!
+{% endfor %}
+!
+{% if router_type in ['p', 'pe', 'asbr'] %}
+mpls ip
+!
+{% endif %}
+!
+{% for route_map in route_maps %}
+route-map {{ route_map.name }} {{ route_map.action }} {{ route_map.sequence }}
+{% if route_map.description %}   description {{ route_map.description }}
+{% endif %}
+{% if route_map.match_ip_address %}   match ip address {{ route_map.match_ip_address }}
+{% endif %}
+{% if route_map.match_community %}   match community {{ route_map.match_community }}
+{% endif %}
+{% if route_map.set_ospf_bit %}   set ospf bit {{ route_map.set_ospf_bit }}
+{% endif %}
+{% if route_map.set_tag %}   set tag {{ route_map.set_tag }}
+{% endif %}
+{% if route_map.set_local_preference %}   set local-preference {{ route_map.set_local_preference }}
+{% endif %}
+!
+{% endfor %}
+!
+{% if router_type in ['p', 'pe', 'asbr'] %}
+router bfd
+   multihop interval 300 min-rx 300 multiplier 3
+!
+{% endif %}
+!
+{% if bgp %}
+router bgp {{ bgp.asn }}
+{% for neighbor in bgp.neighbors %}
+   neighbor {{ neighbor.ip }} remote-as {{ neighbor.remote_as }}
+{% if neighbor.update_source %}   neighbor {{ neighbor.ip }} update-source {{ neighbor.update_source }}
+{% endif %}
+{% if neighbor.send_community %}   neighbor {{ neighbor.ip }} send-community {{ neighbor.send_community }}
+{% endif %}
+{% endfor %}
+{% if bgp.redistribute_connected %}   redistribute connected
+{% endif %}
+{% if bgp.redistribute_ospf %}   redistribute ospf
+{% endif %}
+   !
+{% if bgp.address_families %}
+{% for af in bgp.address_families %}
+   address-family {{ af.family }}
+{% for neighbor in af.neighbors %}
+      neighbor {{ neighbor.ip }} activate
+{% endfor %}
+{% if af.next_hop_self %}      neighbor default encapsulation mpls next-hop-self source-interface {{ af.next_hop_self }}
+{% endif %}
+   !
+{% endfor %}
+{% endif %}
+{% for vrf in bgp.vrfs %}
+   vrf {{ vrf.name }}
+{% if vrf.rd %}      rd {{ vrf.rd }}
+{% endif %}
+{% if vrf.rt_import %}      route-target import {{ vrf.rt_import }}
+{% endif %}
+{% if vrf.rt_export %}      route-target export {{ vrf.rt_export }}
+{% endif %}
+{% for neighbor in vrf.neighbors %}
+      neighbor {{ neighbor.ip }} remote-as {{ neighbor.remote_as }}
+{% if neighbor.send_community %}      neighbor {{ neighbor.ip }} send-community {{ neighbor.send_community }}
+{% endif %}
+{% if neighbor.address_family %}      address-family {{ neighbor.address_family }}
+         neighbor {{ neighbor.ip }} activate
+      !
+{% endif %}
+{% endfor %}
+{% if vrf.redistribute_connected %}      redistribute connected
+{% endif %}
+   !
+{% endfor %}
+!
+{% endif %}
+!
+{% if isis %}
+router isis {{ isis.process }}
+   net {{ isis.net }}
+   router-id ipv4 {{ isis.router_id }}
+   is-type {{ isis.type }}
+   log-adjacency-changes
+   timers local-convergence-delay protected-prefixes
+   set-overload-bit on-startup wait-for-bgp
+   advertise passive-only
+   spf-interval 1 50 100
+   graceful-restart
+   !
+   address-family ipv4 unicast
+      maximum-paths {{ isis.max_paths }}
+      fast-reroute ti-lfa mode link-protection {{ isis.level }}
+   !
+   segment-routing mpls
+      no shutdown
+!
+{% endif %}
+!
+{% for ospf in ospfs %}
+router ospf {{ ospf.process }} vrf {{ ospf.vrf }}
+   router-id {{ ospf.router_id }}
+{% if ospf.passive_interface_default %}   passive-interface default
+{% endif %}
+{% if ospf.no_passive_interfaces %}
+{% for intf in ospf.no_passive_interfaces %}
+   no passive-interface {{ intf }}
+{% endfor %}
+{% endif %}
+{% if ospf.redistribute_bgp %}   redistribute bgp
+{% endif %}
+{% if ospf.redistribute_bgp_route_map %}   redistribute bgp route-map {{ ospf.redistribute_bgp_route_map }}
+{% endif %}
+   max-lsa {{ ospf.max_lsa }}
+!
+{% endfor %}
+!
+management ssh
+   authentication empty-passwords permit
+   !
+   vrf MGMT
+      no shutdown
+!
+end

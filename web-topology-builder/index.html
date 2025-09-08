@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Topology Builder</title>
+    <style>
+        /* Inline CSS for self-contained version */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 50%, #42a5f5 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .device-palette {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            min-width: 220px;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+        }
+
+        .device-palette::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #ffa726, #42a5f5, #ab47bc);
+            border-radius: 15px 15px 0 0;
+        }
+
+        .device-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+            border: 2px solid #e3f2fd;
+            border-radius: 10px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            user-select: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .device-item:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: #42a5f5;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(66, 165, 245, 0.3);
+        }
+
+        .device-item:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .workspace {
+            display: flex;
+            gap: 25px;
+        }
+
+        .canvas-container {
+            flex: 1;
+            background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            position: relative;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        #topology-canvas {
+            border: 2px solid #e3f2fd;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            cursor: crosshair;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #5a6268 0%, #343a40 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .info-panel {
+            width: 320px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+        }
+
+        .info-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #42a5f5, #ab47bc, #ff6b6b, #ffa726);
+            border-radius: 15px 15px 0 0;
+        }
+
+        .panel-section {
+            margin-bottom: 25px;
+        }
+
+        .panel-section h4 {
+            margin-bottom: 12px;
+            color: #42a5f5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            animation: modalAppear 0.3s ease-out;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 25px;
+            border-bottom: 2px solid #e3f2fd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 13px 13px 0 0;
+        }
+
+        .modal-header h3 {
+            color: white;
+            margin: 0;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #ff6b6b;
+            transform: scale(1.2);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 25px;
+            border-top: 2px solid #e3f2fd;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            background: #f8f9ff;
+            border-radius: 0 0 13px 13px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #42a5f5;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e3f2fd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #ffffff;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #42a5f5;
+            box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.2);
+            background: #f8f9ff;
+        }
+
+        .text-muted {
+            color: #666;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 1200px) {
+            .workspace {
+                flex-direction: column;
+            }
+            .info-panel {
+                width: 100%;
+            }
+        }
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-network-wired"></i> Network Topology Builder</h1>
+            <p>Create Arista cEOS network topologies with drag & drop</p>
+        </header>
+
+        <div class="toolbar">
+            <div class="device-palette">
+                <h3>Device Library</h3>
+                <div class="device-item" data-type="ceos" draggable="true" id="ceos-device" ondragstart="handleDragStart(event)">
+                    <i class="fas fa-server"></i>
+                    <span>cEOS Router</span>
+                </div>
+                <div class="device-item" data-type="linux" draggable="true" id="linux-device" ondragstart="handleDragStart(event)">
+                    <i class="fab fa-linux"></i>
+                    <span>Linux Host</span>
+                </div>
+                <div class="device-item" data-type="cisco" draggable="true" id="cisco-device" ondragstart="handleDragStart(event)">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Cisco Router</span>
+                </div>
+                <div class="device-item" data-type="juniper" draggable="true" id="juniper-device" ondragstart="handleDragStart(event)">
+                    <i class="fas fa-route"></i>
+                    <span>Juniper Router</span>
+                </div>
+                <div class="device-item" data-type="nokia" draggable="true" id="nokia-device" ondragstart="handleDragStart(event)">
+                    <i class="fas fa-globe"></i>
+                    <span>Nokia SRL</span>
+                </div>
+
+            </div>
+
+            <div class="actions">
+                <button id="clear-canvas" class="btn btn-secondary">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+                <button id="configure-templates" class="btn btn-secondary">
+                    <i class="fas fa-cogs"></i> Templates
+                </button>
+                <button id="export-topology" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Export Topology
+                </button>
+                <button id="export-configs" class="btn btn-primary">
+                    <i class="fas fa-file-code"></i> Export Configs
+                </button>
+            </div>
+        </div>
+
+        <div class="workspace">
+            <div class="canvas-container">
+                <canvas id="topology-canvas" width="1200" height="800"></canvas>
+                <div id="properties-panel" class="properties-panel hidden">
+                    <h4>Device Properties</h4>
+                    <div id="properties-content"></div>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <div class="panel-section">
+                    <h4><i class="fas fa-info-circle"></i> Instructions</h4>
+                    <ul>
+                        <li>Drag devices from the library to the canvas</li>
+                        <li>Click and drag between devices to create links</li>
+                        <li>Double-click links to configure IP addresses</li>
+                        <li>Double-click devices to set properties</li>
+                        <li>Use Export buttons to generate configurations</li>
+                    </ul>
+                </div>
+
+                <div class="panel-section">
+                    <h4><i class="fas fa-list"></i> Topology Summary</h4>
+                    <div id="topology-summary">
+                        <p>Devices: <span id="device-count">0</span></p>
+                        <p>Links: <span id="link-count">0</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Link Configuration Modal -->
+        <div id="link-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Configure Link</h3>
+                    <span class="modal-close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="endpoint-a">Device A Interface:</label>
+                        <select id="endpoint-a" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="endpoint-b">Device B Interface:</label>
+                        <select id="endpoint-b" class="form-control"></select>
+                    </div>
+                    <div class="ip-config">
+                        <h4>IP Configuration</h4>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label for="ip-a">Device A IP:</label>
+                                <input type="text" id="ip-a" class="form-control" placeholder="192.168.1.1/24">
+                            </div>
+                            <div class="form-group half">
+                                <label for="ip-b">Device B IP:</label>
+                                <input type="text" id="ip-b" class="form-control" placeholder="192.168.1.2/24">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="delete-link" class="btn btn-secondary" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; margin-right: auto;">Delete Link</button>
+                    <button id="save-link" class="btn btn-primary">Save</button>
+                    <button id="cancel-link" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device Configuration Modal -->
+        <div id="device-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Configure Device</h3>
+                    <span class="modal-close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="device-name">Device Name:</label>
+                        <input type="text" id="device-name" class="form-control" placeholder="router1">
+                    </div>
+                    <div class="form-group">
+                        <label for="device-type">Device Type:</label>
+                        <select id="device-type" class="form-control">
+                            <option value="ceos">cEOS Router</option>
+                            <option value="linux">Linux Host</option>
+                            <option value="cisco">Cisco Router</option>
+                            <option value="juniper">Juniper Router</option>
+                            <option value="nokia">Nokia SRL</option>
+                        </select>
+                    </div>
+                    <div id="router-config" class="router-config">
+                        <h4>Router Configuration</h4>
+                        <div class="form-group">
+                            <label for="hostname">Hostname:</label>
+                            <input type="text" id="hostname" class="form-control" placeholder="router1">
+                        </div>
+                        <div class="form-group">
+                            <label for="mgmt-ip">Management IP:</label>
+                            <input type="text" id="mgmt-ip" class="form-control" placeholder="192.168.101.10">
+                        </div>
+                        <div class="form-group">
+                            <label for="loopback-ip">Loopback IP:</label>
+                            <input type="text" id="loopback-ip" class="form-control" placeholder="10.255.1.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="asn">ASN:</label>
+                            <input type="text" id="asn" class="form-control" placeholder="65000">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="delete-device" class="btn btn-secondary" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; margin-right: auto;">Delete Device</button>
+                    <button id="save-device" class="btn btn-primary">Save</button>
+                    <button id="cancel-device" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application initialization
+    </script>
+    <!-- Complete Inline JavaScript for Self-Contained Version -->
+    <script>
+        class TopologyBuilder {
+            constructor() {
+                this.canvas = document.getElementById('topology-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.devices = [];
+                this.links = [];
+                this.selectedDevice = null;
+                this.selectedLink = null;
+                this.draggedDevice = null;
+                this.isDrawingLink = false;
+                this.linkStart = null;
+                this.linkStartDevice = null;
+                this.deviceCounter = 0;
+                this.linkCounter = 0;
+
+                // Device templates with vendor-specific configurations
+                this.deviceTemplates = {
+                    ceos: {
+                        interfacePattern: 'eth{port}',
+                        configTemplate: `! Device: {{ hostname }}
+! Generated by Network Topology Builder
+
+hostname {{ hostname }}
+ip name-server vrf MGMT 8.8.8.8
+ip name-server vrf MGMT 192.168.2.1
+
+interface Management0
+   vrf MGMT
+   ip address {{ mgmt_ip }}/24
+
+interface Loopback0
+   ip address {{ loopback_ip }}/32
+
+{% for interface in interfaces %}
+interface {{ interface.name }}
+   ip address {{ interface.ip }}
+   no shutdown
+{% endfor %}
+
+router bgp {{ asn }}
+   router-id {{ loopback_ip }}
+
+end`,
+                        sampleConfig: `! Arista cEOS Configuration Template
+! Interface naming: eth0, eth1, eth2, etc.
+! Management interface: Management0
+! Loopback: Loopback0`
+                    },
+                    cisco: {
+                        interfacePattern: 'et{port}',
+                        configTemplate: `! Device: {{ hostname }}
+! Cisco IOS-XE Configuration Template
+
+hostname {{ hostname }}
+ip name-server 8.8.8.8
+ip name-server 192.168.2.1
+
+interface Loopback0
+ ip address {{ loopback_ip }} 255.255.255.255
+
+{% for interface in interfaces %}
+interface {{ interface.name }}
+ ip address {{ interface.ip }} 255.255.255.255
+ no shutdown
+{% endfor %}
+
+router bgp {{ asn }}
+ bgp router-id {{ loopback_ip }}
+ bgp log-neighbor-changes
+
+end`,
+                        sampleConfig: `! Cisco IOS-XE Configuration Template
+! Interface naming: et0/0, et0/1, et0/2, etc.
+! Management interface: GigabitEthernet0/0 (auto-configured)
+! Loopback: Loopback0`
+                    },
+                    juniper: {
+                        interfacePattern: 'ge-0/0/{port}',
+                        configTemplate: `## Device: {{ hostname }}
+## Juniper vMX Configuration Template
+
+system {
+    host-name {{ hostname }};
+    name-server {
+        8.8.8.8;
+        192.168.2.1;
+    }
+}
+
+interfaces {
+    lo0 {
+        unit 0 {
+            family inet {
+                address {{ loopback_ip }}/32;
+            }
+        }
+    }
+    {% for interface in interfaces %}
+    {{ interface.name }} {
+        unit 0 {
+            family inet {
+                address {{ interface.ip }};
+            }
+        }
+    }
+    {% endfor %}
+}
+
+protocols {
+    bgp {
+        group ebgp {
+            type external;
+            local-as {{ asn }};
+        }
+    }
+}`,
+                        sampleConfig: `## Juniper vMX Configuration Template
+## Interface naming: ge-0/0/0, ge-0/0/1, ge-0/0/2, etc.
+## Management interface: fxp0 (auto-configured)
+## Loopback: lo0.0`
+                    },
+                    nokia: {
+                        interfacePattern: 'ethernet-1/{port}',
+                        configTemplate: `# Device: {{ hostname }}
+# Nokia SR Linux Configuration Template
+
+system {
+    name {{ hostname }}
+    dns {
+        server-list [
+            8.8.8.8
+            192.168.2.1
+        ]
+    }
+}
+
+interface system0 {
+    subinterface 0 {
+        ipv4 {
+            address {{ loopback_ip }}/32
+        }
+    }
+}
+
+{% for interface in interfaces %}
+interface {{ interface.name }} {
+    subinterface 0 {
+        ipv4 {
+            address {{ interface.ip }}
+        }
+    }
+}
+{% endfor %}
+
+network-instance default {
+    protocols {
+        bgp {
+            autonomous-system {{ asn }}
+            router-id {{ loopback_ip }}
+        }
+    }
+}`,
+                        sampleConfig: `# Nokia SR Linux Configuration Template
+# Interface naming: ethernet-1/1, ethernet-1/2, ethernet-1/3, etc.
+# Management interface: mgmt0 (auto-configured)
+# Loopback: system0.0`
+                    },
+                    linux: {
+                        interfacePattern: 'eth{port}',
+                        configTemplate: `# Device: {{ hostname }}
+# Linux Host Configuration Template
+
+hostname {{ hostname }}
+
+# Network interfaces
+auto lo
+iface lo inet loopback
+
+{% for interface in interfaces %}
+auto {{ interface.name }}
+iface {{ interface.name }} inet static
+    address {{ interface.ip }}
+{% endfor %}
+
+# DNS configuration
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 192.168.2.1" >> /etc/resolv.conf`,
+                        sampleConfig: `# Linux Host Configuration Template
+# Interface naming: eth0, eth1, eth2, etc.
+# Management interface: eth0 (first interface)
+# Loopback: lo
+# Note: Linux hosts typically don't run BGP routing protocols`
+                    }
+                };
+
+                this.init();
+                this.setupEventListeners();
+            }
+
+            init() {
+                this.resizeCanvas();
+                this.updateSummary();
+                this.draw();
+            }
+
+            resizeCanvas() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.clientWidth - 40;
+                this.canvas.height = 600;
+            }
+
+            setupEventListeners() {
+                // Device drag and drop
+                document.querySelectorAll('.device-item').forEach(item => {
+                    item.addEventListener('dragstart', (e) => {
+                        const deviceType = e.currentTarget.dataset.type;
+                        e.dataTransfer.setData('text/plain', deviceType);
+                        e.dataTransfer.effectAllowed = 'copy';
+                    });
+                });
+
+                // Canvas events
+                this.canvas.addEventListener('drop', this.handleCanvasDrop.bind(this));
+                this.canvas.addEventListener('dragover', this.handleCanvasDragOver.bind(this));
+                this.canvas.addEventListener('mousedown', this.handleCanvasMouseDown.bind(this));
+                this.canvas.addEventListener('mousemove', this.handleCanvasMouseMove.bind(this));
+                this.canvas.addEventListener('mouseup', this.handleCanvasMouseUp.bind(this));
+                this.canvas.addEventListener('dblclick', this.handleCanvasDoubleClick.bind(this));
+                this.canvas.addEventListener('contextmenu', this.handleCanvasContextMenu.bind(this));
+
+                // Keyboard events for delete
+                document.addEventListener('keydown', this.handleKeyDown.bind(this));
+
+                // Button events
+                const clearBtn = document.getElementById('clear-canvas');
+                const configureTemplatesBtn = document.getElementById('configure-templates');
+                const exportTopoBtn = document.getElementById('export-topology');
+                const exportConfigBtn = document.getElementById('export-configs');
+
+                if (clearBtn) clearBtn.addEventListener('click', this.clearCanvas.bind(this));
+                if (configureTemplatesBtn) configureTemplatesBtn.addEventListener('click', this.showTemplateModal.bind(this));
+                if (exportTopoBtn) exportTopoBtn.addEventListener('click', this.exportTopology.bind(this));
+                if (exportConfigBtn) exportConfigBtn.addEventListener('click', this.exportConfigs.bind(this));
+
+                // Modal events
+                this.setupModalEvents();
+            }
+
+            handleCanvasDragOver(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+            }
+
+            handleCanvasDrop(e) {
+                e.preventDefault();
+
+                const deviceType = e.dataTransfer.getData('text/plain');
+
+                if (deviceType) {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    const device = this.addDevice(deviceType, x, y);
+                }
+            }
+
+            handleCanvasMouseDown(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const device = this.getDeviceAtPosition(x, y);
+                if (device) {
+                    // If we're already drawing a link, complete it with this device
+                    if (this.isDrawingLink && this.linkStartDevice) {
+                        const startDevice = this.linkStartDevice;
+                        const endDevice = device;
+
+                        if (startDevice !== endDevice) {
+                            this.addLink(startDevice, endDevice);
+                            this.updateDebugInfo(`Link created: ${startDevice.name} ↔ ${endDevice.name}`);
+                        } else {
+                            this.updateDebugInfo('Cannot create link to the same device');
+                        }
+
+                        // Clean up link drawing state
+                        this.isDrawingLink = false;
+                        this.linkStart = null;
+                        this.linkStartDevice = null;
+                        this.draw();
+                        return;
+                    }
+
+                    // Store potential drag target but don't activate yet
+                    this.potentialDragDevice = device;
+                    this.dragStartPos = { x, y };
+                    this.dragThreshold = 5; // pixels
+                    this.isWaitingForDragIntent = true;
+                    this.selectedDevice = device;
+                    this.updateDebugInfo(`Click and hold to move device, or drag to create link from ${device.name}`);
+                    return;
+                }
+
+                const link = this.getLinkAtPosition(x, y);
+                if (link) {
+                    this.selectedLink = link;
+                    this.selectedDevice = null;
+                    this.showLinkModal(link);
+                    return;
+                }
+
+                this.isDrawingLink = true;
+                this.linkStart = { x, y };
+                this.selectedDevice = null;
+                this.selectedLink = null;
+                this.updateDebugInfo('Click and drag between devices to create links');
+            }
+
+            handleCanvasMouseMove(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                if (this.draggedDevice) {
+                    // Already dragging a device
+                    this.draggedDevice.x = x;
+                    this.draggedDevice.y = y;
+                    this.draw();
+                } else if (this.isWaitingForDragIntent && this.potentialDragDevice) {
+                    // Check if mouse moved enough to start dragging
+                    const deltaX = Math.abs(x - this.dragStartPos.x);
+                    const deltaY = Math.abs(y - this.dragStartPos.y);
+                    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+                    if (distance > this.dragThreshold) {
+                        this.draggedDevice = this.potentialDragDevice;
+                        this.isWaitingForDragIntent = false;
+                        this.canvas.style.cursor = 'grabbing';
+                        this.updateDebugInfo(`Moving device: ${this.draggedDevice.name}`);
+                    }
+                } else if (this.isDrawingLink && this.linkStart) {
+                    // Drawing link preview
+                    this.draw();
+                    this.drawLinkPreview(this.linkStart.x, this.linkStart.y, x, y);
+                }
+            }
+
+            handleCanvasMouseUp(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                if (this.draggedDevice) {
+                    // Finished dragging a device
+                    this.draggedDevice = null;
+                    this.canvas.style.cursor = 'crosshair';
+                    this.updateDebugInfo('Device moved');
+                } else if (this.isWaitingForDragIntent && this.potentialDragDevice) {
+                    // User clicked on device but didn't move much - start link drawing from this device
+                    this.isDrawingLink = true;
+                    this.linkStartDevice = this.potentialDragDevice;
+                    this.linkStart = { x: this.potentialDragDevice.x, y: this.potentialDragDevice.y };
+                    this.isWaitingForDragIntent = false;
+                    this.updateDebugInfo(`Drawing link from ${this.potentialDragDevice.name} - click on target device`);
+                    this.potentialDragDevice = null;
+                } else if (this.isDrawingLink && this.linkStart) {
+                    // Finishing link drawing
+                    // Use stored device reference instead of searching by coordinates
+                    const startDevice = this.linkStartDevice;
+                    const endDevice = this.getDeviceAtPosition(x, y);
+
+                    if (startDevice && endDevice && startDevice !== endDevice) {
+                        this.addLink(startDevice, endDevice);
+                        this.updateDebugInfo(`Link created: ${startDevice.name} ↔ ${endDevice.name}`);
+                    } else {
+                        this.updateDebugInfo('Link creation failed - try clicking on source device first, then target device');
+                    }
+
+                    this.isDrawingLink = false;
+                    this.linkStart = null;
+                    this.linkStartDevice = null;
+                    this.draw();
+                }
+
+                // Clean up drag intent state
+                this.isWaitingForDragIntent = false;
+                this.potentialDragDevice = null;
+            }
+
+            handleCanvasDoubleClick(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const device = this.getDeviceAtPosition(x, y);
+                if (device) {
+                    this.showDeviceModal(device);
+                }
+            }
+
+            handleCanvasContextMenu(e) {
+                e.preventDefault();
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // Check for device first
+                const device = this.getDeviceAtPosition(x, y);
+                if (device) {
+                    this.showContextMenu(e.clientX, e.clientY, 'device', device);
+                    return;
+                }
+
+                // Check for link
+                const link = this.getLinkAtPosition(x, y);
+                if (link) {
+                    this.showContextMenu(e.clientX, e.clientY, 'link', link);
+                    return;
+                }
+            }
+
+            handleKeyDown(e) {
+                if (e.key === 'Delete' || e.key === 'Backspace') {
+                    if (this.selectedDevice) {
+                        this.deleteDevice(this.selectedDevice);
+                    } else if (this.selectedLink) {
+                        this.deleteLink(this.selectedLink);
+                    }
+                }
+            }
+
+            showContextMenu(x, y, type, item) {
+                // Remove existing context menu
+                const existingMenu = document.getElementById('context-menu');
+                if (existingMenu) {
+                    existingMenu.remove();
+                }
+
+                // Create context menu
+                const menu = document.createElement('div');
+                menu.id = 'context-menu';
+                menu.style.position = 'fixed';
+                menu.style.left = x + 'px';
+                menu.style.top = y + 'px';
+                menu.style.background = 'white';
+                menu.style.border = '1px solid #ccc';
+                menu.style.borderRadius = '5px';
+                menu.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+                menu.style.zIndex = '10000';
+                menu.style.minWidth = '120px';
+
+                const deleteBtn = document.createElement('div');
+                deleteBtn.textContent = `Delete ${type === 'device' ? 'Device' : 'Link'}`;
+                deleteBtn.style.padding = '8px 12px';
+                deleteBtn.style.cursor = 'pointer';
+                deleteBtn.style.color = '#d32f2f';
+                deleteBtn.style.fontSize = '14px';
+                deleteBtn.addEventListener('mouseenter', () => {
+                    deleteBtn.style.background = '#ffebee';
+                });
+                deleteBtn.addEventListener('mouseleave', () => {
+                    deleteBtn.style.background = 'white';
+                });
+                deleteBtn.addEventListener('click', () => {
+                    if (type === 'device') {
+                        this.deleteDevice(item);
+                    } else {
+                        this.deleteLink(item);
+                    }
+                    menu.remove();
+                });
+
+                menu.appendChild(deleteBtn);
+                document.body.appendChild(menu);
+
+                // Remove menu when clicking elsewhere
+                const removeMenu = (e) => {
+                    if (!menu.contains(e.target)) {
+                        menu.remove();
+                        document.removeEventListener('click', removeMenu);
+                    }
+                };
+                setTimeout(() => {
+                    document.addEventListener('click', removeMenu);
+                }, 10);
+            }
+
+            deleteDevice(device) {
+                if (confirm(`Are you sure you want to delete device "${device.name}"? This will also remove all connected links.`)) {
+                    // Remove all links connected to this device
+                    this.links = this.links.filter(link =>
+                        link.deviceA !== device && link.deviceB !== device
+                    );
+
+                    // Remove the device
+                    this.devices = this.devices.filter(d => d !== device);
+
+                    // Clear selection
+                    if (this.selectedDevice === device) {
+                        this.selectedDevice = null;
+                    }
+
+                    this.updateSummary();
+                    this.draw();
+                    this.updateDebugInfo(`Device "${device.name}" deleted`);
+                }
+            }
+
+            deleteLink(link) {
+                if (confirm(`Are you sure you want to delete the link between "${link.deviceA.name}" and "${link.deviceB.name}"?`)) {
+                    this.links = this.links.filter(l => l !== link);
+
+                    // Clear selection
+                    if (this.selectedLink === link) {
+                        this.selectedLink = null;
+                    }
+
+                    this.updateSummary();
+                    this.draw();
+                    this.updateDebugInfo(`Link between "${link.deviceA.name}" and "${link.deviceB.name}" deleted`);
+                }
+            }
+
+            addDevice(type, x, y) {
+                this.deviceCounter++;
+                const device = {
+                    id: this.deviceCounter,
+                    type: type,
+                    name: `${type}${this.deviceCounter}`,
+                    x: x,
+                    y: y,
+                    width: 80,
+                    height: 60,
+                    config: {
+                        hostname: `${type}${this.deviceCounter}`,
+                        mgmtIp: `192.168.101.${10 + this.deviceCounter}`,
+                        loopbackIp: `10.255.1.${this.deviceCounter}`,
+                        asn: type === 'ceos' ? '65000' : null
+                    }
+                };
+
+                this.devices.push(device);
+                this.updateSummary();
+                this.draw();
+                this.updateDebugInfo(`Added ${type} device: ${device.name}`);
+                return device;
+            }
+
+            addLink(deviceA, deviceB) {
+                this.linkCounter++;
+                const portA = this.getNextInterface(deviceA);
+                const portB = this.getNextInterface(deviceB);
+
+                const link = {
+                    id: this.linkCounter,
+                    deviceA: deviceA,
+                    deviceB: deviceB,
+                    interfaceA: this.generateInterfaceName(deviceA.type, portA),
+                    interfaceB: this.generateInterfaceName(deviceB.type, portB),
+                    ipA: '',
+                    ipB: ''
+                };
+
+                this.links.push(link);
+                this.updateSummary();
+                this.draw();
+                return link;
+            }
+
+            getNextInterface(device) {
+                const template = this.deviceTemplates[device.type];
+                if (!template) return 1;
+
+                const usedInterfaces = this.links
+                    .filter(link => link.deviceA === device || link.deviceB === device)
+                    .map(link => {
+                        if (link.deviceA === device) return this.extractInterfaceNumber(link.interfaceA, device.type);
+                        if (link.deviceB === device) return this.extractInterfaceNumber(link.interfaceB, device.type);
+                        return 0;
+                    });
+
+                let nextIntf = 1;
+                while (usedInterfaces.includes(nextIntf)) {
+                    nextIntf++;
+                }
+                return nextIntf;
+            }
+
+            extractInterfaceNumber(interfaceName, deviceType) {
+                // Extract interface number based on device type patterns
+                switch (deviceType) {
+                    case 'juniper':
+                        const juniperMatch = interfaceName.match(/ge-0\/0\/(\d+)/);
+                        return juniperMatch ? parseInt(juniperMatch[1]) : 0;
+                    case 'cisco':
+                        const ciscoMatch = interfaceName.match(/et(\d+)/);
+                        return ciscoMatch ? parseInt(ciscoMatch[1]) : 0;
+                    case 'nokia':
+                        const nokiaMatch = interfaceName.match(/ethernet-1\/(\d+)/);
+                        return nokiaMatch ? parseInt(nokiaMatch[1]) : 0;
+                    case 'ceos':
+                    case 'linux':
+                    default:
+                        const ethMatch = interfaceName.match(/eth(\d+)/);
+                        return ethMatch ? parseInt(ethMatch[1]) : 0;
+                }
+            }
+
+            generateInterfaceName(deviceType, portNumber) {
+                const template = this.deviceTemplates[deviceType];
+                if (!template) {
+                    return `eth${portNumber}`;
+                }
+
+                const result = template.interfacePattern.replace('{port}', portNumber);
+                return result;
+            }
+
+            getDeviceAtPosition(x, y) {
+                return this.devices.find(device =>
+                    x >= device.x - device.width/2 &&
+                    x <= device.x + device.width/2 &&
+                    y >= device.y - device.height/2 &&
+                    y <= device.y + device.height/2
+                );
+            }
+
+            getLinkAtPosition(x, y) {
+                return this.links.find(link => {
+                    const dx = link.deviceB.x - link.deviceA.x;
+                    const dy = link.deviceB.y - link.deviceA.y;
+                    const length = Math.sqrt(dx * dx + dy * dy);
+
+                    if (length === 0) return false;
+
+                    const ux = dx / length;
+                    const uy = dy / length;
+
+                    const vx = x - link.deviceA.x;
+                    const vy = y - link.deviceA.y;
+
+                    const t = Math.max(0, Math.min(length, vx * ux + vy * uy));
+                    const closestX = link.deviceA.x + t * ux;
+                    const closestY = link.deviceA.y + t * uy;
+
+                    const distance = Math.sqrt((x - closestX) ** 2 + (y - closestY) ** 2);
+                    return distance < 5;
+                });
+            }
+
+            draw() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.links.forEach(link => this.drawLink(link));
+                this.devices.forEach(device => this.drawDevice(device));
+            }
+
+            drawDevice(device) {
+                const { x, y, width, height, type, name, config } = device;
+
+                // Colorful device types
+                const deviceColors = {
+                    ceos: { fill: '#667eea', border: '#4c63d2', icon: '\uf233' },
+                    linux: { fill: '#4caf50', border: '#388e3c', icon: '\uf17c' },
+                    cisco: { fill: '#ff6b6b', border: '#d32f2f', icon: '\uf0e8' },
+                    juniper: { fill: '#ab47bc', border: '#8e24aa', icon: '\uf1b2' },
+                    nokia: { fill: '#26a69a', border: '#00897b', icon: '\uf57d' },
+                    switch: { fill: '#ff9800', border: '#f57c00', icon: '\uf6ff' },
+                    firewall: { fill: '#f44336', border: '#d32f2f', icon: '\uf132' }
+                };
+
+                const colors = deviceColors[type] || deviceColors.ceos;
+
+                this.ctx.fillStyle = colors.fill;
+                this.ctx.fillRect(x - width/2, y - height/2, width, height);
+
+                this.ctx.strokeStyle = this.selectedDevice === device ? '#ff6b6b' : colors.border;
+                this.ctx.lineWidth = this.selectedDevice === device ? 3 : 2;
+                this.ctx.strokeRect(x - width/2, y - height/2, width, height);
+
+                this.ctx.fillStyle = 'white';
+                this.ctx.font = '20px FontAwesome';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText(colors.icon, x, y - 5);
+
+                // Draw device name with bounds checking
+                this.ctx.fillStyle = '#333';
+                this.ctx.font = '12px Arial';
+                this.ctx.textAlign = 'center';
+
+                // Truncate long names and ensure they fit within canvas bounds
+                let displayName = name;
+                const maxWidth = Math.min(width - 10, 80);
+                if (this.ctx.measureText(displayName).width > maxWidth) {
+                    while (this.ctx.measureText(displayName + '...').width > maxWidth && displayName.length > 3) {
+                        displayName = displayName.slice(0, -1);
+                    }
+                    displayName += '...';
+                }
+
+                // Ensure text doesn't go outside canvas bounds
+                const textY = Math.min(y + height/2 + 15, this.canvas.height - 10);
+                const textX = Math.max(Math.min(x, this.canvas.width - 40), 40);
+
+                this.ctx.fillText(displayName, textX, textY);
+
+                // Draw management IP with bounds checking
+                if (config.mgmtIp) {
+                    this.ctx.fillStyle = '#666';
+                    this.ctx.font = '10px Arial';
+
+                    let displayIp = config.mgmtIp;
+                    const ipMaxWidth = Math.min(width - 10, 70);
+                    if (this.ctx.measureText(displayIp).width > ipMaxWidth) {
+                        // Show only last part of IP
+                        const parts = displayIp.split('.');
+                        displayIp = '...' + parts.slice(-2).join('.');
+                    }
+
+                    const ipY = Math.min(textY + 13, this.canvas.height - 5);
+                    const ipX = Math.max(Math.min(x, this.canvas.width - 35), 35);
+
+                    this.ctx.fillText(displayIp, ipX, ipY);
+                }
+            }
+
+            drawLink(link) {
+                const { deviceA, deviceB } = link;
+
+                // Calculate offset for multiple links between same devices
+                const offset = this.calculateLinkOffset(link);
+
+                this.ctx.strokeStyle = this.selectedLink === link ? '#ff6b6b' : '#667eea';
+                this.ctx.lineWidth = this.selectedLink === link ? 3 : 2;
+                this.ctx.beginPath();
+
+                if (offset === 0) {
+                    // Straight line for single link
+                    this.ctx.moveTo(deviceA.x, deviceA.y);
+                    this.ctx.lineTo(deviceB.x, deviceB.y);
+                } else {
+                    // Parallel offset line for multiple links
+                    this.drawParallelLink(deviceA.x, deviceA.y, deviceB.x, deviceB.y, offset);
+                }
+
+                this.ctx.stroke();
+
+                // Position label along the line
+                const labelPos = this.getLabelPosition(deviceA.x, deviceA.y, deviceB.x, deviceB.y, offset);
+
+                this.ctx.fillStyle = '#333';
+                this.ctx.font = '10px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText(`${link.interfaceA}-${link.interfaceB}`, labelPos.x, labelPos.y);
+            }
+
+            calculateLinkOffset(link) {
+                const { deviceA, deviceB } = link;
+
+                // Find all links between these two devices
+                const linksBetweenDevices = this.links.filter(l =>
+                    (l.deviceA === deviceA && l.deviceB === deviceB) ||
+                    (l.deviceA === deviceB && l.deviceB === deviceA)
+                );
+
+                if (linksBetweenDevices.length === 1) {
+                    return 0; // No offset needed for single link
+                }
+
+                // Find the index of this link among all links between these devices
+                const linkIndex = linksBetweenDevices.indexOf(link);
+                const totalLinks = linksBetweenDevices.length;
+
+                // Calculate available space between devices
+                const dx = deviceB.x - deviceA.x;
+                const dy = deviceB.y - deviceA.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                // Use distance-based spacing - more space for farther devices
+                const baseSpacing = Math.min(distance * 0.15, 80); // Max 80px spacing
+                const minSpacing = 25; // Minimum spacing between links
+                const spacing = Math.max(minSpacing, baseSpacing / totalLinks);
+
+                // Distribute links evenly above and below the center line
+                const centerOffset = (totalLinks - 1) * spacing / 2;
+                const offset = (linkIndex * spacing) - centerOffset;
+
+                return offset;
+            }
+
+            drawParallelLink(x1, y1, x2, y2, offset) {
+                // Calculate perpendicular vector for offset
+                const dx = x2 - x1;
+                const dy = y2 - y1;
+                const length = Math.sqrt(dx * dx + dy * dy);
+
+                if (length === 0) return;
+
+                // Perpendicular vector (rotated 90 degrees)
+                const perpX = -dy / length;
+                const perpY = dx / length;
+
+                // Offset both endpoints by the perpendicular vector
+                const offsetX1 = x1 + perpX * offset;
+                const offsetY1 = y1 + perpY * offset;
+                const offsetX2 = x2 + perpX * offset;
+                const offsetY2 = y2 + perpY * offset;
+
+                // Draw straight line with parallel offset
+                this.ctx.moveTo(offsetX1, offsetY1);
+                this.ctx.lineTo(offsetX2, offsetY2);
+            }
+
+            getLabelPosition(x1, y1, x2, y2, offset) {
+                const midX = (x1 + x2) / 2;
+                const midY = (y1 + y2) / 2;
+
+                if (offset === 0) {
+                    return { x: midX, y: midY - 5 };
+                }
+
+                // Calculate perpendicular vector for label positioning
+                const dx = x2 - x1;
+                const dy = y2 - y1;
+                const length = Math.sqrt(dx * dx + dy * dy);
+
+                if (length === 0) return { x: midX, y: midY - 5 };
+
+                const perpX = -dy / length;
+                const perpY = dx / length;
+
+                // Position label slightly away from the curve
+                const labelOffset = offset > 0 ? 15 : -5;
+                return {
+                    x: midX + perpX * labelOffset,
+                    y: midY + perpY * labelOffset - 5
+                };
+            }
+
+            drawLinkPreview(startX, startY, endX, endY) {
+                this.ctx.strokeStyle = '#999';
+                this.ctx.lineWidth = 2;
+                this.ctx.setLineDash([5, 5]);
+                this.ctx.beginPath();
+                this.ctx.moveTo(startX, startY);
+                this.ctx.lineTo(endX, endY);
+                this.ctx.stroke();
+                this.ctx.setLineDash([]);
+            }
+
+            showDeviceModal(device) {
+                const modal = document.getElementById('device-modal');
+                if (modal) {
+                    document.getElementById('device-name').value = device.name;
+                    document.getElementById('device-type').value = device.type;
+                    document.getElementById('hostname').value = device.config.hostname || '';
+                    document.getElementById('mgmt-ip').value = device.config.mgmtIp || '';
+                    document.getElementById('loopback-ip').value = device.config.loopbackIp || '';
+                    document.getElementById('asn').value = device.config.asn || '';
+                    modal.classList.remove('hidden');
+                }
+            }
+
+            showLinkModal(link) {
+                const modal = document.getElementById('link-modal');
+                if (modal) {
+                    document.getElementById('endpoint-a').value = link.interfaceA;
+                    document.getElementById('endpoint-b').value = link.interfaceB;
+                    document.getElementById('ip-a').value = link.ipA || '';
+                    document.getElementById('ip-b').value = link.ipB || '';
+                    modal.classList.remove('hidden');
+                }
+            }
+
+            clearCanvas() {
+                if (confirm('Are you sure you want to clear the entire topology?')) {
+                    this.devices = [];
+                    this.links = [];
+                    this.selectedDevice = null;
+                    this.selectedLink = null;
+                    this.deviceCounter = 0;
+                    this.linkCounter = 0;
+                    this.updateSummary();
+                    this.draw();
+                }
+            }
+
+            exportTopology() {
+                // Collect all unique device types used in the topology
+                const usedDeviceTypes = [...new Set(this.devices.map(device => device.type))];
+
+                // Define container images for each device type
+                const deviceImages = {
+                    ceos: 'ceos:4.34.1F',
+                    linux: 'ubuntu:20.04',
+                    cisco: 'cisco/cisco-ios-xe:17.03.01a',
+                    juniper: 'juniper/vmx:18.2R1.9',
+                    nokia: 'nokia/srlinux:21.6.1-61'
+                };
+
+                // Build the kinds section with all used device types
+                const kinds = {};
+                usedDeviceTypes.forEach(type => {
+                    if (deviceImages[type]) {
+                        kinds[type] = { image: deviceImages[type] };
+                    }
+                });
+
+                const topology = {
+                    name: 'generated-topology',
+                    mgmt: { network: 'internalnet', 'ipv4-subnet': '192.168.101.0/24' },
+                    topology: {
+                        kinds: kinds,
+                        nodes: {},
+                        links: []
+                    }
+                };
+
+                this.devices.forEach(device => {
+                    topology.topology.nodes[device.name] = {
+                        kind: device.type,
+                        'mgmt-ipv4': device.config.mgmtIp,
+                        'startup-config': `configs/${device.name}.cfg`
+                    };
+                });
+
+                this.links.forEach(link => {
+                    topology.topology.links.push({
+                        endpoints: [`${link.deviceA.name}:${link.interfaceA}`, `${link.deviceB.name}:${link.interfaceB}`]
+                    });
+                });
+
+                this.downloadFile('topology.yml', this.stringifyYAML(topology));
+            }
+
+            exportConfigs() {
+                this.devices.forEach((device, index) => {
+                    try {
+                        const config = this.generateDeviceConfig(device);
+                        const extension = device.type === 'juniper' ? '.conf' : '.cfg';
+                        const filename = `${device.name}${extension}`;
+                        this.downloadFile(filename, config);
+                    } catch (error) {
+                        console.error('Error processing device:', device.name, error);
+                    }
+                });
+            }
+
+            generateDeviceConfig(device) {
+                const template = this.deviceTemplates[device.type];
+                if (!template) {
+                    return `# Unsupported device type: ${device.type}`;
+                }
+
+                // Prepare template variables with defaults - ensure all are strings
+                const templateVars = {
+                    hostname: String(device.config.hostname || device.name || 'router'),
+                    mgmt_ip: String(device.config.mgmtIp || '192.168.101.10'),
+                    loopback_ip: String(device.config.loopbackIp || '10.255.1.1'),
+                    asn: String(device.config.asn || '65000')
+                };
+
+                // Get interfaces for this device
+                const deviceInterfaces = this.links
+                    .filter(link => {
+                        const isDeviceA = link.deviceA === device;
+                        const isDeviceB = link.deviceB === device;
+                        return isDeviceA || isDeviceB;
+                    })
+                    .map((link, linkIndex) => {
+                        try {
+                            if (link.deviceA === device) {
+                                const interfaceName = link.interfaceA || `eth${linkIndex + 1}`;
+                                const interfaceIp = link.ipA || `192.168.${linkIndex + 1}.1/24`;
+
+                                const iface = {
+                                    name: String(interfaceName),
+                                    ip: String(interfaceIp)
+                                };
+                                return iface;
+                            } else {
+                                const interfaceName = link.interfaceB || `eth${linkIndex + 1}`;
+                                const interfaceIp = link.ipB || `192.168.${linkIndex + 1}.2/24`;
+
+                                const iface = {
+                                    name: String(interfaceName),
+                                    ip: String(interfaceIp)
+                                };
+                                return iface;
+                            }
+                        } catch (error) {
+                            console.error('Error processing link:', link.id, error);
+                            throw error;
+                        }
+                    });
+
+                templateVars.interfaces = deviceInterfaces;
+
+                // Simple Jinja-like template rendering
+                let config = template.configTemplate;
+
+                // Replace simple variables - ensure safe string conversion
+                Object.keys(templateVars).forEach(key => {
+                    if (key !== 'interfaces') {
+                        const value = String(templateVars[key] || '');
+                        const regex = new RegExp(`{{ ${key} }}`, 'g');
+                        config = config.replace(regex, value);
+                    }
+                });
+
+                // Handle interfaces loop
+                if (deviceInterfaces.length > 0) {
+                    // Find the interface template block
+                    const interfaceRegex = /{% for interface in interfaces %}(.*?){% endfor %}/s;
+                    const interfaceTemplateMatch = config.match(interfaceRegex);
+
+                    if (interfaceTemplateMatch && interfaceTemplateMatch.length >= 2) {
+                        const fullMatch = interfaceTemplateMatch[0];
+                        const interfaceBlock = interfaceTemplateMatch[1];
+
+                        let interfacesConfig = '';
+
+                        deviceInterfaces.forEach((iface, index) => {
+                            try {
+                                let ifaceConfig = interfaceBlock;
+
+                                // Ensure safe string conversion for interface properties
+                                const interfaceName = String(iface.name || `eth${index}`);
+                                const interfaceIp = String(iface.ip || `192.168.${index + 1}.1/24`);
+
+                                ifaceConfig = ifaceConfig.replace(/{{ interface\.name }}/g, interfaceName);
+                                ifaceConfig = ifaceConfig.replace(/{{ interface\.ip }}/g, interfaceIp);
+
+                                interfacesConfig += ifaceConfig;
+                            } catch (error) {
+                                console.error('Error processing interface', index + 1, ':', iface, error);
+                                throw error;
+                            }
+                        });
+
+                        config = config.replace(fullMatch, interfacesConfig);
+                    }
+                } else {
+                    // Remove interface blocks if no interfaces
+                    config = config.replace(/{% for interface in interfaces %}.*?{% endfor %}/gs, '');
+                }
+
+                return config;
+            }
+
+            downloadFile(filename, content) {
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            stringifyYAML(obj, indent = 0) {
+                let result = '';
+                const spaces = ' '.repeat(indent);
+
+                if (Array.isArray(obj)) {
+                    obj.forEach(item => {
+                        result += spaces + '- ' + this.stringifyYAML(item, indent + 2).trim() + '\n';
+                    });
+                } else if (typeof obj === 'object' && obj !== null) {
+                    Object.keys(obj).forEach(key => {
+                        const value = obj[key];
+                        if (typeof value === 'object') {
+                            result += spaces + key + ':\n' + this.stringifyYAML(value, indent + 2);
+                        } else {
+                            result += spaces + key + ': ' + value + '\n';
+                        }
+                    });
+                } else {
+                    result += spaces + obj + '\n';
+                }
+
+                return result;
+            }
+
+            updateSummary() {
+                const deviceCount = document.getElementById('device-count');
+                const linkCount = document.getElementById('link-count');
+                if (deviceCount) deviceCount.textContent = this.devices.length;
+                if (linkCount) linkCount.textContent = this.links.length;
+            }
+
+            updateDebugInfo(message) {
+                const debugElement = document.getElementById('debug-info');
+                if (debugElement) {
+                    debugElement.textContent = message;
+                }
+            }
+
+            setupModalEvents() {
+                // Device modal events
+                const saveDeviceBtn = document.getElementById('save-device');
+                const cancelDeviceBtn = document.getElementById('cancel-device');
+                const deleteDeviceBtn = document.getElementById('delete-device');
+
+                if (saveDeviceBtn) {
+                    saveDeviceBtn.addEventListener('click', this.saveDeviceConfig.bind(this));
+                }
+                if (cancelDeviceBtn) {
+                    cancelDeviceBtn.addEventListener('click', this.cancelDeviceConfig.bind(this));
+                }
+                if (deleteDeviceBtn) {
+                    deleteDeviceBtn.addEventListener('click', () => {
+                        if (this.selectedDevice) {
+                            this.deleteDevice(this.selectedDevice);
+                        }
+                    });
+                }
+
+                // Link modal events
+                const saveLinkBtn = document.getElementById('save-link');
+                const cancelLinkBtn = document.getElementById('cancel-link');
+                const deleteLinkBtn = document.getElementById('delete-link');
+
+                if (saveLinkBtn) {
+                    saveLinkBtn.addEventListener('click', this.saveLinkConfig.bind(this));
+                }
+                if (cancelLinkBtn) {
+                    cancelLinkBtn.addEventListener('click', this.cancelLinkConfig.bind(this));
+                }
+                if (deleteLinkBtn) {
+                    deleteLinkBtn.addEventListener('click', () => {
+                        if (this.selectedLink) {
+                            this.deleteLink(this.selectedLink);
+                        }
+                    });
+                }
+
+                // Modal close events
+                document.querySelectorAll('.modal-close').forEach(close => {
+                    close.addEventListener('click', this.hideAllModals.bind(this));
+                });
+
+                // Device type change event
+                const deviceTypeSelect = document.getElementById('device-type');
+                if (deviceTypeSelect) {
+                    deviceTypeSelect.addEventListener('change', this.handleDeviceTypeChange.bind(this));
+                }
+            }
+
+            saveDeviceConfig() {
+                if (!this.selectedDevice) return;
+
+                const nameInput = document.getElementById('device-name');
+                const hostnameInput = document.getElementById('hostname');
+                const mgmtIpInput = document.getElementById('mgmt-ip');
+                const loopbackIpInput = document.getElementById('loopback-ip');
+                const asnInput = document.getElementById('asn');
+
+                if (nameInput) this.selectedDevice.name = nameInput.value;
+                if (hostnameInput) this.selectedDevice.config.hostname = hostnameInput.value;
+                if (mgmtIpInput) this.selectedDevice.config.mgmtIp = mgmtIpInput.value;
+                if (loopbackIpInput) this.selectedDevice.config.loopbackIp = loopbackIpInput.value;
+                if (asnInput) this.selectedDevice.config.asn = asnInput.value;
+
+                this.hideDeviceModal();
+                this.draw();
+                this.updateDebugInfo(`Device ${this.selectedDevice.name} updated`);
+            }
+
+            cancelDeviceConfig() {
+                this.hideDeviceModal();
+            }
+
+            saveLinkConfig() {
+                if (!this.selectedLink) return;
+
+                const endpointA = document.getElementById('endpoint-a');
+                const endpointB = document.getElementById('endpoint-b');
+                const ipA = document.getElementById('ip-a');
+                const ipB = document.getElementById('ip-b');
+
+                if (endpointA) this.selectedLink.interfaceA = endpointA.value;
+                if (endpointB) this.selectedLink.interfaceB = endpointB.value;
+                if (ipA) this.selectedLink.ipA = ipA.value;
+                if (ipB) this.selectedLink.ipB = ipB.value;
+
+                this.hideLinkModal();
+                this.draw();
+                this.updateDebugInfo(`Link ${this.selectedLink.interfaceA}-${this.selectedLink.interfaceB} updated`);
+            }
+
+            cancelLinkConfig() {
+                this.hideLinkModal();
+            }
+
+            hideDeviceModal() {
+                const modal = document.getElementById('device-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+                this.selectedDevice = null;
+            }
+
+            hideLinkModal() {
+                const modal = document.getElementById('link-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+                this.selectedLink = null;
+            }
+
+            hideAllModals() {
+                this.hideDeviceModal();
+                this.hideLinkModal();
+            }
+
+            handleDeviceTypeChange(e) {
+                const routerConfig = document.getElementById('router-config');
+                if (e.target.value === 'ceos') {
+                    if (routerConfig) routerConfig.classList.remove('hidden');
+                } else {
+                    if (routerConfig) routerConfig.classList.add('hidden');
+                }
+            }
+
+            showTemplateModal() {
+                // Create template configuration modal
+                const modal = document.createElement('div');
+                modal.id = 'template-modal';
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 800px;">
+                        <div class="modal-header">
+                            <h3>Device Template Configuration</h3>
+                            <span class="modal-close">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="template-device-type">Device Type:</label>
+                                <select id="template-device-type" class="form-control">
+                                    <option value="ceos">cEOS Router</option>
+                                    <option value="cisco">Cisco Router</option>
+                                    <option value="juniper">Juniper Router</option>
+                                    <option value="nokia">Nokia SRL</option>
+                                    <option value="linux">Linux Host</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="interface-pattern">Interface Naming Pattern:</label>
+                                <input type="text" id="interface-pattern" class="form-control" placeholder="eth{port}">
+                                <small class="text-muted">Use {port} as placeholder for port number</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="config-template">Configuration Template:</label>
+                                <textarea id="config-template" class="form-control" rows="15" style="font-family: monospace; font-size: 12px;"></textarea>
+                                <small class="text-muted">Use Jinja2 syntax: {{ hostname }}, {{ mgmt_ip }}, {{ loopback_ip }}, {{ asn }}, {% for interface in interfaces %}...{% endfor %}</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sample-config">Sample Configuration:</label>
+                                <textarea id="sample-config" class="form-control" rows="8" style="font-family: monospace; font-size: 12px;" readonly></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="load-template" class="btn btn-secondary">Load Template</button>
+                            <button id="save-template" class="btn btn-primary">Save Template</button>
+                            <button id="cancel-template" class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+                modal.classList.remove('hidden');
+
+                // Setup modal events
+                this.setupTemplateModalEvents();
+
+                // Load initial template
+                this.loadTemplateForDevice('ceos');
+            }
+
+            setupTemplateModalEvents() {
+                const modal = document.getElementById('template-modal');
+                const closeBtn = modal.querySelector('.modal-close');
+                const cancelBtn = document.getElementById('cancel-template');
+                const loadBtn = document.getElementById('load-template');
+                const saveBtn = document.getElementById('save-template');
+                const deviceTypeSelect = document.getElementById('template-device-type');
+
+                closeBtn.addEventListener('click', () => this.hideTemplateModal());
+                cancelBtn.addEventListener('click', () => this.hideTemplateModal());
+                loadBtn.addEventListener('click', () => this.loadSelectedTemplate());
+                saveBtn.addEventListener('click', () => this.saveTemplate());
+                deviceTypeSelect.addEventListener('change', (e) => this.loadTemplateForDevice(e.target.value));
+
+                // Close modal when clicking outside
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        this.hideTemplateModal();
+                    }
+                });
+            }
+
+            loadTemplateForDevice(deviceType) {
+                const template = this.deviceTemplates[deviceType];
+                if (template) {
+                    document.getElementById('interface-pattern').value = template.interfacePattern;
+                    document.getElementById('config-template').value = template.configTemplate;
+                    document.getElementById('sample-config').value = template.sampleConfig;
+                }
+            }
+
+            loadSelectedTemplate() {
+                const deviceType = document.getElementById('template-device-type').value;
+                this.loadTemplateForDevice(deviceType);
+            }
+
+            saveTemplate() {
+                const deviceType = document.getElementById('template-device-type').value;
+                const interfacePattern = document.getElementById('interface-pattern').value;
+                const configTemplate = document.getElementById('config-template').value;
+                const sampleConfig = document.getElementById('sample-config').value;
+
+                if (this.deviceTemplates[deviceType]) {
+                    this.deviceTemplates[deviceType].interfacePattern = interfacePattern;
+                    this.deviceTemplates[deviceType].configTemplate = configTemplate;
+                    this.deviceTemplates[deviceType].sampleConfig = sampleConfig;
+
+                    this.updateDebugInfo(`Template updated for ${deviceType}`);
+                    alert(`Template saved for ${deviceType}!`);
+                }
+            }
+
+            hideTemplateModal() {
+                const modal = document.getElementById('template-modal');
+                if (modal) {
+                    modal.remove();
+                }
+            }
+        }
+
+        // Global functions
+        let topologyBuilderInstance = null;
+
+        function handleDragStart(event) {
+            const deviceType = event.target.closest('.device-item').dataset.type;
+            event.dataTransfer.setData('text/plain', deviceType);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                topologyBuilderInstance = new TopologyBuilder();
+            } catch (error) {
+                console.error('Failed to initialize topology builder:', error);
+            }
+        });
+    </script>
+
+</body>
+</html>
