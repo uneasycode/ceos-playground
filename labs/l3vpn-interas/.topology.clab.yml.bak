@@ -1,4 +1,4 @@
-name: l3vpn-101
+name: mpls-isis
 prefix: ""
 
 mgmt:

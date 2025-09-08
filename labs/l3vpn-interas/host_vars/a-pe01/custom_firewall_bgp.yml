@@ -1,0 +1,9 @@
+custom_fw_bgp_loopback_interfaces:
+- name: Loopback1013
+  eos_cli: "hardware forwarding id"
+
+# Case: 503991
+custom_fw_bgp_router_bgp:
+  vlans:
+  - id: 1301
+    eos_cli: "redistribute router-mac system default-gateway"
