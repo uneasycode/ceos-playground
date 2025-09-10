@@ -16,13 +16,13 @@ topology:
     a-p01:
       kind: ceos
       mgmt-ipv4: 192.168.101.111
-      startup-config: l3vpn-configs/a-p01.cfg
+      startup-config: l3vpn-optiona/a-p01.cfg
       env:
         TMODE: lacp
     a-p02:
       kind: ceos
       mgmt-ipv4: 192.168.101.112
-      startup-config: l3vpn-configs/a-p02.cfg
+      startup-config: l3vpn-optiona/a-p02.cfg
       env:
         TMODE: lacp
 
@@ -31,13 +31,13 @@ topology:
     b-p01:
       kind: ceos
       mgmt-ipv4: 192.168.101.121
-      startup-config: l3vpn-configs/b-p01.cfg
+      startup-config: l3vpn-optiona/b-p01.cfg
       env:
         TMODE: lacp
     b-p02:
       kind: ceos
       mgmt-ipv4: 192.168.101.122
-      startup-config: l3vpn-configs/b-p02.cfg
+      startup-config: l3vpn-optiona/b-p02.cfg
       env:
         TMODE: lacp
 
@@ -46,13 +46,13 @@ topology:
     a-pe01:
       kind: ceos
       mgmt-ipv4: 192.168.101.11
-      startup-config: l3vpn-configs/a-pe01.cfg
+      startup-config: l3vpn-optiona/a-pe01.cfg
       env:
         TMODE: lacp
     a-pe02:
       kind: ceos
       mgmt-ipv4: 192.168.101.12
-      startup-config: l3vpn-configs/a-pe02.cfg
+      startup-config: l3vpn-optiona/a-pe02.cfg
       env:
         TMODE: lacp
 
@@ -61,7 +61,7 @@ topology:
     b-pe01:
       kind: ceos
       mgmt-ipv4: 192.168.101.21
-      startup-config: l3vpn-configs/b-pe01.cfg
+      startup-config: l3vpn-optiona/b-pe01.cfg
       env:
         TMODE: lacp
 
@@ -70,13 +70,13 @@ topology:
     a-asbr:
       kind: ceos
       mgmt-ipv4: 192.168.101.13
-      startup-config: l3vpn-configs/a-asbr.cfg
+      startup-config: l3vpn-optiona/a-asbr.cfg
       env:
         TMODE: lacp
     b-asbr:
       kind: ceos
       mgmt-ipv4: 192.168.101.22
-      startup-config: l3vpn-configs/b-asbr.cfg
+      startup-config: l3vpn-optiona/b-asbr.cfg
       env:
         TMODE: lacp
 
@@ -85,7 +85,7 @@ topology:
     a-ce01:
       kind: ceos
       mgmt-ipv4: 192.168.101.211
-      startup-config: l3vpn-configs/a-ce01.cfg
+      startup-config: l3vpn-optiona/a-ce01.cfg
       env:
         TMODE: lacp
 
@@ -94,7 +94,7 @@ topology:
     b-ce01:
       kind: ceos
       mgmt-ipv4: 192.168.101.221
-      startup-config: l3vpn-configs/b-ce01.cfg
+      startup-config: l3vpn-optiona/b-ce01.cfg
       env:
         TMODE: lacp
 
@@ -106,16 +106,16 @@ topology:
     - endpoints: ["a-pe01:eth2", "a-p02:eth1"]
     - endpoints: ["a-pe02:eth1", "a-p01:eth2"]
     - endpoints: ["a-pe02:eth2", "a-p02:eth2"]
-    - endpoints: ["a-asbr:eth1", "a-p01:eth3"]
-    - endpoints: ["a-asbr:eth2", "a-p02:eth3"]
+    - endpoints: ["a-asbr:eth6", "a-p01:eth6"]
+    - endpoints: ["a-asbr:eth7", "a-p02:eth7"]
 
   # -------------------------------- #
   # AS 65001 Core network
     - endpoints: ["b-p01:eth5", "b-p02:eth5"]
     - endpoints: ["b-pe01:eth1", "b-p01:eth1"]
     - endpoints: ["b-pe01:eth2", "b-p02:eth1"]
-    - endpoints: ["b-asbr:eth1", "b-p01:eth3"]
-    - endpoints: ["b-asbr:eth2", "b-p02:eth3"]
+    - endpoints: ["b-asbr:eth6", "b-p01:eth6"]
+    - endpoints: ["b-asbr:eth7", "b-p02:eth7"]
 
   # -------------------------------- #
   # Inter-AS link (Option A: Back-to-back VRFs)
