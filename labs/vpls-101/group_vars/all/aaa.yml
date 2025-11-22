@@ -1,0 +1,35 @@
+local_users:
+  - name: admin
+    privilege: 15
+    role: network-admin
+    no_password: true
+    # sha512_password: "$6$Df86J4/SFMDE3/1K$Hef4KstdoxNDaami37cBquTWOTplC.miMPjXVgQxMe92.e5wxlnXOLlebgPj8Fz1KO0za/RCO7ZIs4Q6Eiq1g1"
+
+  - name: ansible
+    privilege: 15
+    role: network-admin
+    # password: ansible
+    sha512_password: "$6$Bzsa1OORmsTrrpHD$vgoe9jwmM6ZT7ntUXXrSM.oNpVmtNyk0FA/FiF2bdndE1fRDQKp/Y4lQ4CLhnUFRBpKyvgGF9JtBhAmmI9fXC/"
+
+aaa_authorization:
+  exec:
+    default: local
+
+aaa_authentication:
+  policies:
+    local:
+      # Allow admin with no password
+      allow_nopassword: True
+
+management_api_http:
+  enable_vrfs:
+  - name: "{{ management_vrf_name }}"
+  enable_https: true
+
+management_ssh:
+  enable: True
+  authentication:
+    empty_passwords: "permit"
+  vrfs:
+    - name: "{{ management_vrf_name }}"
+      enable: True

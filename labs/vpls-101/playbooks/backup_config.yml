@@ -1,0 +1,11 @@
+---
+- name: Backup Network Device Configs
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Arista Config Backup
+      arista.eos.eos_config:
+        backup: true
+        backup_options:
+          filename: "../../l3vpn-configs/{{ inventory_hostname }}.cfg"
+
