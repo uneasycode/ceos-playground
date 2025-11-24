@@ -5,7 +5,7 @@
   tasks:
     - name: Arista Config Load
       arista.eos.eos_config:
-        src: "../l3vpn-configs/{{ inventory_hostname }}.cfg"
+        src: "../vpls-configs/{{ inventory_hostname }}.cfg"
         replace: config
 
 

@@ -1,0 +1,293 @@
+---
+- name: Deploy OSPFv2 across the Arista 4-node square
+  hosts: all
+  gather_facts: no
+  connection: network_cli
+
+  tasks:
+    - name: Enable global IP routing
+      arista.eos.eos_config:
+        lines:
+          - ip routing
+        
+    - name: Configure OSPFv2 process on a-p01
+      arista.eos.eos_ospfv2:
+        config:
+          processes:
+            - process_id: 1
+              router_id: 10.255.0.1
+        state: merged
+      when: inventory_hostname == "a-p01"
+
+    - name: Configure OSPFv2 process on a-p02
+      arista.eos.eos_ospfv2:
+        config:
+          processes:
+            - process_id: 1
+              router_id: 10.255.0.2
+        state: merged
+      when: inventory_hostname == "a-p02"
+
+    - name: Configure OSPFv2 process on b-p01
+      arista.eos.eos_ospfv2:
+        config:
+          processes:
+            - process_id: 1
+              router_id: 10.255.0.3
+        state: merged
+      when: inventory_hostname == "b-p01"
+
+    - name: Configure OSPFv2 process on b-p02
+      arista.eos.eos_ospfv2:
+        config:
+          processes:
+            - process_id: 1
+              router_id: 10.255.0.4
+        state: merged
+      when: inventory_hostname == "b-p02"
+
+    - name: Configure OSPFv2 process on a-pe01
+      arista.eos.eos_ospfv2:
+        config:
+          processes:
+            - process_id: 1
+              router_id: 10.255.1.1
+        state: merged
+      when: inventory_hostname == "a-pe01"
+
+    - name: Configure OSPFv2 process on a-pe02
+      arista.eos.eos_ospfv2:
+        config:
+          processes:
+            - process_id: 1
+              router_id: 10.255.1.2
+        state: merged
+      when: inventory_hostname == "a-pe02"
+
+    - name: Configure OSPFv2 process on b-pe01
+      arista.eos.eos_ospfv2:
+        config:
+          processes:
+            - process_id: 1
+              router_id: 10.255.1.5
+        state: merged
+      when: inventory_hostname == "b-pe01"
+
+
+
+    - name: Configure OSPFv2 interfaces on a-p01
+      arista.eos.eos_ospf_interfaces:
+        config:
+          - name: Ethernet5
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.0"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet6
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.0"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet7
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.0"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet1
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.100"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet2
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.100"
+                cost: 10
+                network: point-to-point
+        state: merged
+      when: inventory_hostname == "a-p01"
+
+    - name: Configure OSPFv2 interfaces on a-p02
+      arista.eos.eos_ospf_interfaces:
+        config:
+          - name: Ethernet5
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.0"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet6
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.0"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet1
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.100"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet2
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.100"
+                cost: 10
+                network: point-to-point
+        state: merged
+      when: inventory_hostname == "a-p02"
+
+
+
+    - name: Configure OSPFv2 interfaces on b-p01
+      arista.eos.eos_ospf_interfaces:
+        config:
+          - name: Ethernet5
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.0"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet6
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.0"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet1
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.200"
+                cost: 10
+                network: point-to-point
+        state: merged
+      when: inventory_hostname == "b-p01"
+
+
+
+
+    - name: Configure OSPFv2 interfaces on b-p02
+      arista.eos.eos_ospf_interfaces:
+        config:
+          - name: Ethernet5
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.0"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet6
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.0"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet7
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.0"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet1
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.200"
+                cost: 10
+                network: point-to-point
+        state: merged
+      when: inventory_hostname == "b-p02"
+
+
+
+
+    - name: Configure OSPFv2 interfaces on a-pe01
+      arista.eos.eos_ospf_interfaces:
+        config:
+          - name: Ethernet1
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.100"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet2
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.100"
+                cost: 10
+                network: point-to-point
+        state: merged
+      when: inventory_hostname == "a-pe01"
+
+
+    - name: Configure OSPFv2 interfaces on a-pe02
+      arista.eos.eos_ospf_interfaces:
+        config:
+          - name: Ethernet1
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.100"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet2
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.100"
+                cost: 10
+                network: point-to-point
+        state: merged
+      when: inventory_hostname == "a-pe02"
+
+
+    - name: Configure OSPFv2 interfaces on b-pe01
+      arista.eos.eos_ospf_interfaces:
+        config:
+          - name: Ethernet1
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.200"
+                cost: 10
+                network: point-to-point
+          - name: Ethernet2
+            address_family:
+              - afi: ipv4
+                area:
+                  area_id: "0.0.0.200"
+                cost: 10
+                network: point-to-point
+        state: merged
+      when: inventory_hostname == "b-pe01"
+
+
+    - name: Verify OSPF neighbor adjacencies
+      arista.eos.eos_command:
+        commands:
+          - show ip ospf neighbor
+      register: ospf_neighbors
+
+    - name: Display OSPF neighbor table
+      debug:
+        var: ospf_neighbors.stdout_lines
